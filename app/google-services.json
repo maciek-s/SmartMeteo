@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "335264116072",
+    "firebase_url": "https://mcloud-2a08f.firebaseio.com",
+    "project_id": "mcloud-2a08f",
+    "storage_bucket": "mcloud-2a08f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:335264116072:android:05702b001f1626f271badd",
+        "android_client_info": {
+          "package_name": "com.masiad.smartmeteo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "335264116072-m3gak1rq94b9n3ski6vr7885fu5qjprc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.masiad.smartmeteo",
+            "certificate_hash": "674145dcdf08828b54330e7dc4894817716908c6"
+          }
+        },
+        {
+          "client_id": "335264116072-79nskb46jjus6e2j2sr0culfvcqj07sj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAF6U4yjB_9pPgraGkUhXAXoB51PlTE6y8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "335264116072-pqi2d70toqh70svcanljbt7a3e847lcd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
