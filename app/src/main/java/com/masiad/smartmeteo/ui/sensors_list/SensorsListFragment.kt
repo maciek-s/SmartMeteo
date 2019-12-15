@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,13 +27,17 @@ class SensorsListFragment : Fragment() {
     ): View? {
         sensorListViewModel =
                 ViewModelProviders.of(this).get(SensorsListViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_sensors_list, container, false)
-        val textView: TextView = root.findViewById(R.id.text_sensorsList)
-        sensorListViewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })
 
-        adapter = SensorsListAdapter(requireContext())
+        val root = inflater.inflate(R.layout.fragment_sensors_list, container, false)
+
+        val sensorAdapter = object : SensorsListAdapter(requireContext()){
+            override fun onItemClick(sensorId: Int) {
+                Navigation.findNavController(root)
+                    .navigate(SensorsListFragmentDirections.actionNavSensorsListToSensorFragment(sensorId))
+            }
+
+        }
+        adapter = sensorAdapter
         // Sensor list observe
         sensorListViewModel.allSensors.observe(viewLifecycleOwner, Observer { sensors ->
             sensors?.let { adapter.setSensors(it) }

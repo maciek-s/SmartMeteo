@@ -9,11 +9,6 @@ import kotlinx.coroutines.launch
 
 class SensorsListViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is sensors list Fragment"
-    }
-    val text: LiveData<String> = _text
-
     // The ViewModel maintains a reference to the repository to get data.
     private val repository: SensorRepository
     // LiveData gives us updated words when they change.

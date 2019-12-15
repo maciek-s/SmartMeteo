@@ -11,9 +11,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.masiad.smartmeteo.R
 import com.masiad.smartmeteo.data.Sensor
 
-class SensorsListAdapter internal constructor(
+abstract class SensorsListAdapter internal constructor(
     context: Context
 ) : RecyclerView.Adapter<SensorsListAdapter.SensorsViewHolder>() {
+    abstract fun onItemClick(sensorId: Int)
 
     private val inflater: LayoutInflater = LayoutInflater.from(context)
     private var sensors = emptyList<Sensor>() // Cached copy of words
@@ -33,9 +34,8 @@ class SensorsListAdapter internal constructor(
         holder.sensorItemView.text = current.sensorName
 
         holder.itemView.setOnClickListener {
-            Navigation.findNavController(it).navigate(R.id.nav_home)
+            onItemClick(current.sensorId)
         }
-        //todo on click put sensor serial to next fragment and show temperature
     }
 
     internal fun setSensors(sensors: List<Sensor>) {

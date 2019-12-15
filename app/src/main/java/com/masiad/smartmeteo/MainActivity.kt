@@ -1,10 +1,7 @@
 package com.masiad.smartmeteo
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
-import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -22,6 +19,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.google.firebase.database.*
 import com.masiad.smartmeteo.data.Sensor
 import com.masiad.smartmeteo.ui.sensors_list.SensorsListViewModel
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -43,8 +41,6 @@ class MainActivity : AppCompatActivity() {
 
         val fab: FloatingActionButton = findViewById(R.id.fab)
         fab.setOnClickListener { view ->
-            //            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                    .setAction("Action", null).show()
             showAddSensorModal()
 
         }
@@ -80,7 +76,7 @@ class MainActivity : AppCompatActivity() {
                     // Add sensor
                     addSensorToSensorsList(sensorName.toString(), serialNumber.toString())
                 } else {
-                    showErrorSnackBar(resources.getString(R.string.inncorect_input_values))
+                    showErrorSnackBar(resources.getString(R.string.incorrect_input_values))
                 }
             }
             .setNegativeButton(
@@ -117,9 +113,20 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                if (dataSnapshot.children.firstOrNull { i -> i.key == serialNumber } != null) {
+                if (dataSnapshot.children.firstOrNull { i ->
+                        i.key.equals(
+                            serialNumber,
+                            true
+                        )
+                    } != null) {
                     // Serial exists add sensor to database
-                    sensorListViewModel.insert(Sensor(0, sensorName, serialNumber))
+                    val idx = sensorListViewModel.insert(
+                        Sensor(
+                            sensorName = sensorName, serialNumber = serialNumber?.toUpperCase(
+                                Locale.ROOT
+                            )
+                        )
+                    )
                     // Move to Sensor Fragment
                 } else {
                     // Show error snackbar

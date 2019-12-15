@@ -9,17 +9,34 @@
         android:id="@+id/nav_home"
         android:name="com.masiad.smartmeteo.ui.home.HomeFragment"
         android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home"/>
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_nav_home_to_sensorFragment"
+            app:destination="@id/nav_sensor" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_sensors_list"
         android:name="com.masiad.smartmeteo.ui.sensors_list.SensorsListFragment"
         android:label="@string/menu_sensors"
-        tools:layout="@layout/fragment_sensors_list" />
+        tools:layout="@layout/fragment_sensors_list" >
+        <action
+            android:id="@+id/action_nav_sensors_list_to_sensorFragment"
+            app:destination="@id/nav_sensor" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_info"
         android:name="com.masiad.smartmeteo.ui.info.InfoFragment"
         android:label="@string/menu_info"
         tools:layout="@layout/fragment_info" />
+    <fragment
+        android:id="@+id/nav_sensor"
+        android:name="com.masiad.smartmeteo.ui.sensor.SensorFragment"
+        android:label="@string/menu_sensor"
+        tools:layout="@layout/sensor_fragment">
+        <argument
+            android:name="sensorId"
+            app:argType="integer" />
+    </fragment>
 </navigation>

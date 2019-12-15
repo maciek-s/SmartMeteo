@@ -15,7 +15,7 @@ interface SensorDao {
     suspend fun deleteAll()
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(sensor: Sensor)
+    suspend fun insert(sensor: Sensor): Long
 
     @Delete
     suspend fun delete(sensor: Sensor)
