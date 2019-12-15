@@ -12,5 +12,11 @@
     <string name="menu_info">Info</string>
 
     <string name="next">Next</string>
+    <string name="add_sensor">Add sensor</string>
+    <string name="sensor_name">Sensor name</string>
+    <string name="serial_number">Serial number</string>
+    <string name="add">Add</string>
+    <string name="inncorect_input_values">Incorrect input values!</string>
+    <string name="invalid_serial_number">Invalid serial number</string>
 
 </resources>
