@@ -16,6 +16,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.Navigation
 import com.google.firebase.database.*
 import com.masiad.smartmeteo.data.Sensor
 import com.masiad.smartmeteo.ui.sensors_list.SensorsListViewModel
@@ -127,6 +128,8 @@ class MainActivity : AppCompatActivity() {
                             )
                         )
                     )
+                    Navigation.findNavController(this@MainActivity, R.id.nav_host_fragment)
+                        .navigate(R.id.nav_sensors_list)
                     // Move to Sensor Fragment
                 } else {
                     // Show error snackbar
