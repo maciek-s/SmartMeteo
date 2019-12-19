@@ -15,6 +15,7 @@ abstract class SensorsListAdapter internal constructor(
     context: Context
 ) : RecyclerView.Adapter<SensorsListAdapter.SensorsViewHolder>() {
     abstract fun onItemClick(sensorId: Int)
+    abstract fun onLongItemClick(sensorId: Int): Boolean
 
     private val inflater: LayoutInflater = LayoutInflater.from(context)
     private var sensors = emptyList<Sensor>() // Cached copy of words
@@ -35,6 +36,10 @@ abstract class SensorsListAdapter internal constructor(
 
         holder.itemView.setOnClickListener {
             onItemClick(current.sensorId)
+        }
+
+        holder.itemView.setOnLongClickListener {
+            return@setOnLongClickListener onLongItemClick(current.sensorId)
         }
     }
 

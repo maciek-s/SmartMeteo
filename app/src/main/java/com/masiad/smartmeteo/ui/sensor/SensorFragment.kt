@@ -88,11 +88,11 @@ class SensorFragment : Fragment() {
                 val values = dataSnapshot.value as HashMap<*, *>
                 println("Snapshot children: ${dataSnapshot.childrenCount}")
 
-                val temp = values[FIREBASE_TEMPERATURE_KEY] as Double
+                val temp = values[FIREBASE_TEMPERATURE_KEY] as Number
                 println("Temp: $temp")
                 sensorViewModel.setCurrentTemperature(temp.toFloat())
 
-                val humidity = values[FIREBASE_HUMIDITY_KEY] as Double
+                val humidity = values[FIREBASE_HUMIDITY_KEY] as Number
                 println("Humidity: $humidity")
                 sensorViewModel.setCurrentHumidity(humidity.toFloat())
             }

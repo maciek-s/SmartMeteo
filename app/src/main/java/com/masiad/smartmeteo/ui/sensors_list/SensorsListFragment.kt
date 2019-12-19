@@ -1,5 +1,6 @@
 package com.masiad.smartmeteo.ui.sensors_list
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -36,6 +37,10 @@ class SensorsListFragment : Fragment() {
                     .navigate(SensorsListFragmentDirections.actionNavSensorsListToSensorFragment(sensorId))
             }
 
+            override fun onLongItemClick(sensorId: Int): Boolean {
+                return onLongClick(sensorId)
+            }
+
         }
         adapter = sensorAdapter
         // Sensor list observe
@@ -44,6 +49,24 @@ class SensorsListFragment : Fragment() {
         })
 
         return root
+    }
+
+    private fun onLongClick(sensorId: Int): Boolean {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.confirm_delete_sensor)
+            .setPositiveButton(
+                android.R.string.ok
+            ) { _, _ ->
+                // Remove sensor form database
+                sensorListViewModel.deleteById(sensorId)
+                adapter.notifyDataSetChanged()
+            }
+            .setNegativeButton(
+                android.R.string.cancel, null
+            )
+        .show()
+
+        return true
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

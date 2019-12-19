@@ -26,4 +26,8 @@ class SensorsListViewModel(application: Application) : AndroidViewModel(applicat
         repository.insert(sensor)
     }
 
+    fun deleteById(sensorId: Int) = viewModelScope.launch {
+        repository.deleteById(sensorId)
+    }
+
 }

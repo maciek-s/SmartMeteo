@@ -12,4 +12,8 @@ class SensorRepository(private val sensorDao: SensorDao) {
     suspend fun loadById(sensorID: Int): Sensor {
         return sensorDao.loadById(sensorID)
     }
+
+    suspend fun deleteById(sensorID: Int) {
+        return sensorDao.deleteById(sensorID)
+    }
 }

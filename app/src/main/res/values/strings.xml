@@ -19,5 +19,6 @@
     <string name="add">Add</string>
     <string name="incorrect_input_values">Incorrect input values!</string>
     <string name="invalid_serial_number">Invalid serial number</string>
+    <string name="confirm_delete_sensor">Are you sure you want to delete this sensor?</string>
 
 </resources>
