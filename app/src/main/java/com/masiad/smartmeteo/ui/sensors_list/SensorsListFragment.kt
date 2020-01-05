@@ -14,8 +14,12 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.masiad.smartmeteo.R
+import com.masiad.smartmeteo.ui.sensor.SensorViewModel
 
 class SensorsListFragment : Fragment() {
+    companion object {
+        val TAG: String = SensorsListFragment::class.java.simpleName
+    }
 
     private lateinit var sensorListViewModel: SensorsListViewModel
     private lateinit var recyclerView: RecyclerView

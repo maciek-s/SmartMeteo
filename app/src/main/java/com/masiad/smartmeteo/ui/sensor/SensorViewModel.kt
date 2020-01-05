@@ -1,6 +1,7 @@
 package com.masiad.smartmeteo.ui.sensor
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -10,6 +11,9 @@ import com.masiad.smartmeteo.data.SensorRepository
 import kotlinx.coroutines.launch
 
 class SensorViewModel(application: Application) : AndroidViewModel(application) {
+    companion object {
+        val TAG: String = SensorViewModel::class.java.simpleName
+    }
 
     // The ViewModel maintains a reference to the repository to get data.
     private val repository: SensorRepository
@@ -28,7 +32,7 @@ class SensorViewModel(application: Application) : AndroidViewModel(application) 
     fun setSensor(sensorID: Int) = viewModelScope.launch {
         sensor.value = repository.loadById(sensorID)
 
-        println("Sensor set: ${sensor.value?.serialNumber}")
+        Log.i(TAG, "Sensor set serial: ${sensor.value?.serialNumber}")
     }
 
     fun setCurrentTemperature(temp: Float) {

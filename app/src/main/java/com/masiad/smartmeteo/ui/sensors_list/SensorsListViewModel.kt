@@ -5,9 +5,13 @@ import androidx.lifecycle.*
 import com.masiad.smartmeteo.data.Sensor
 import com.masiad.smartmeteo.data.SensorRepository
 import com.masiad.smartmeteo.data.AppRoomDatabase
+import com.masiad.smartmeteo.ui.sensor.SensorViewModel
 import kotlinx.coroutines.launch
 
 class SensorsListViewModel(application: Application) : AndroidViewModel(application) {
+    companion object {
+        val TAG: String = SensorsListViewModel::class.java.simpleName
+    }
 
     // The ViewModel maintains a reference to the repository to get data.
     private val repository: SensorRepository

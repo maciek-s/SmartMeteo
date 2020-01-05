@@ -20,6 +20,7 @@ import androidx.navigation.Navigation
 import com.google.firebase.database.*
 import com.masiad.smartmeteo.data.Sensor
 import com.masiad.smartmeteo.ui.sensors_list.SensorsListViewModel
+import com.masiad.smartmeteo.utils.InternetConnection
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -106,11 +107,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun addSensorToSensorsList(sensorName: String?, serialNumber: String?) {
+        if (!InternetConnection.isOnline()) {
+            showErrorSnackBar(resources.getString(R.string.check_internet_connection))
+            return
+        }
         val database = FirebaseDatabase.getInstance()
         val myRef = database.reference
         myRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
-                //todo error
+                showErrorSnackBar(resources.getString(R.string.firebase_error))
             }
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {

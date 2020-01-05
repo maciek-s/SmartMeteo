@@ -11,16 +11,19 @@ import androidx.lifecycle.ViewModelProviders
 import com.masiad.smartmeteo.R
 
 class InfoFragment : Fragment() {
+    companion object {
+        val TAG: String = InfoFragment::class.java.simpleName
+    }
 
     private lateinit var infoViewModel: InfoViewModel
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         infoViewModel =
-                ViewModelProviders.of(this).get(InfoViewModel::class.java)
+            ViewModelProviders.of(this).get(InfoViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_info, container, false)
         val textView: TextView = root.findViewById(R.id.text_info)
         infoViewModel.text.observe(viewLifecycleOwner, Observer {

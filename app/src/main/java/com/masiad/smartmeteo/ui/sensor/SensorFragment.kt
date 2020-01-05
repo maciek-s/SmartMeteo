@@ -1,26 +1,29 @@
 package com.masiad.smartmeteo.ui.sensor
 
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.navArgs
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-
 import com.masiad.smartmeteo.R
 import com.masiad.smartmeteo.utils.FIREBASE_HUMIDITY_KEY
 import com.masiad.smartmeteo.utils.FIREBASE_TEMPERATURE_KEY
 import com.masiad.smartmeteo.utils.format
 
 class SensorFragment : Fragment() {
+    companion object {
+        val TAG: String = SensorFragment::class.java.simpleName
+    }
 
     private lateinit var sensorViewModel: SensorViewModel
 
@@ -63,42 +66,49 @@ class SensorFragment : Fragment() {
     }
 
     private fun setSensorDataListener(serialNumber: String) {
-        println("SerialNumber: $serialNumber")
+        Log.i(TAG, "Serial number: $serialNumber")
         val database = FirebaseDatabase.getInstance()
         val reference = database.getReference(serialNumber)
-        val query = reference.limitToLast(1)
+//        val query = reference.limitToLast(1)
+//        val query = reference.orderByKey().startAt( "1578240150").limitToFirst(1)
+        val query = reference
 
         query.addChildEventListener(object : ChildEventListener {
             override fun onCancelled(p0: DatabaseError) {
-                println("SensorChild: onCanceled")
+                Log.i(TAG, "sensor child onCanceled")
             }
 
             override fun onChildMoved(dataSnapshot: DataSnapshot, p1: String?) {
-                println("SensorChild: onMoved $p1")
+                Log.i(TAG, "sensor child onMoved: $p1")
+
             }
 
             override fun onChildChanged(dataSnapshot: DataSnapshot, p1: String?) {
-                println("SensorChild: onChanged $p1")
+                Log.i(TAG, "sensor child onChanged: $p1")
+
             }
 
             override fun onChildAdded(dataSnapshot: DataSnapshot, p1: String?) {
-                println("SensorChild: onAdded $p1")
-                val timestamp = dataSnapshot.key
-                println("Timestamp $timestamp")
+                Log.i(TAG, "sensor child onAdded: $p1")
+
+                val timestamp = (dataSnapshot.key as String).toLong()
+                Log.i(TAG, "Timestamp: $timestamp")
+                Log.i(TAG, "TimestamC: ${System.currentTimeMillis() / 1000}")
+
                 val values = dataSnapshot.value as HashMap<*, *>
-                println("Snapshot children: ${dataSnapshot.childrenCount}")
 
                 val temp = values[FIREBASE_TEMPERATURE_KEY] as Number
-                println("Temp: $temp")
+                Log.i(TAG, "Temp: $temp")
                 sensorViewModel.setCurrentTemperature(temp.toFloat())
 
                 val humidity = values[FIREBASE_HUMIDITY_KEY] as Number
-                println("Humidity: $humidity")
+                Log.i(TAG, "Humidity: $humidity")
                 sensorViewModel.setCurrentHumidity(humidity.toFloat())
             }
 
             override fun onChildRemoved(dataSnapshot: DataSnapshot) {
-                println("SensorChild: onRemoved")
+                Log.i(TAG, "sensor child onRemoved")
+
             }
 
         })

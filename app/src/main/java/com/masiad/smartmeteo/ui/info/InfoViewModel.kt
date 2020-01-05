@@ -5,6 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class InfoViewModel : ViewModel() {
+    companion object {
+        val TAG: String = InfoViewModel::class.java.simpleName
+    }
 
     private val _text = MutableLiveData<String>().apply {
         value = "This is info Fragment"
