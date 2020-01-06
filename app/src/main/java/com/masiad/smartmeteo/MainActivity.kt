@@ -38,7 +38,9 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         // Enable Firebase offline
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true)
+        try {
+            FirebaseDatabase.getInstance().setPersistenceEnabled(true)
+        } catch (e: DatabaseException) { e.printStackTrace() }
 
         sensorListViewModel =
             ViewModelProviders.of(this).get(SensorsListViewModel::class.java)

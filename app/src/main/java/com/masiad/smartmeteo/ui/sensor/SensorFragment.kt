@@ -1,5 +1,6 @@
 package com.masiad.smartmeteo.ui.sensor
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,12 +14,18 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.navArgs
+import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.masiad.smartmeteo.MainActivity
 import com.masiad.smartmeteo.R
+import com.masiad.smartmeteo.chart.XAxisFormatter
+import com.masiad.smartmeteo.chart.YAxisFormatter
 import com.masiad.smartmeteo.utils.*
 
 class SensorFragment : Fragment() {
@@ -32,8 +39,14 @@ class SensorFragment : Fragment() {
 
     private var temperatureChartItem: View? = null
     private var humidityChartItem: View? = null
-    private var particulateMatter25ChartItem: View? = null
-    private var particulateMatter10ChartItem: View? = null
+    private var pm10ChartItem: View? = null
+    private var pm25ChartItem: View? = null
+
+    private var temperatureLineChart: LineChart? = null
+    private var humidityLineChart: LineChart? = null
+    private var pm10LineChart: LineChart? = null
+    private var pm25LineChart: LineChart? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,34 +69,78 @@ class SensorFragment : Fragment() {
 
         // Set temperature live data list observer
         sensorViewModel.getTemperatureLiveData().observe(viewLifecycleOwner, Observer {
-            val tempString = "Temperature: ${(it.lastOrNull() ?: 0f).format(2)}°"
+            if (it.count() == 0) return@Observer
+
+            // Set current
+            val temperature = it.last()
+            val tempString = "Temperature: ${it.last().format(2)}°"
             temperatureChartItem?.findViewById<TextView>(R.id.sensorTitleTextView)?.text =
                 tempString
+
+            // Refresh chart
+            val entry = Entry((it.count() - 1).toFloat(), temperature)
+            temperatureLineChart?.data?.addEntry(entry, 0)
+
+            temperatureLineChart?.notifyDataSetChanged()
+            temperatureLineChart?.invalidate()
+//            humidityLineChart?.setVisibleXRangeMaximum(20f)
+
         })
 
         // Set humidity live data list observer
         sensorViewModel.getHumidityLiveData().observe(viewLifecycleOwner, Observer {
-            val humidityString = "Humidity: ${(it.lastOrNull() ?: 0f).format(2)}%"
+            if (it.count() == 0) return@Observer
+
+            // Set current
+            val humidity = it.last()
+            val humidityString = "Humidity: ${humidity.format(2)}%"
             humidityChartItem?.findViewById<TextView>(R.id.sensorTitleTextView)?.text =
                 humidityString
+
+            // Refresh chart
+            val entry = Entry((it.count() - 1).toFloat(), humidity)
+            humidityLineChart?.data?.addEntry(entry, 0)
+
+            humidityLineChart?.notifyDataSetChanged()
+            humidityLineChart?.invalidate()
         })
 
         // Set pm10 live data list observer
         sensorViewModel.getPM10LiveData().observe(viewLifecycleOwner, Observer {
+            if (it.count() == 0) return@Observer
+
+            // Set current
+            val pm10 = it.last()
             val pm10String =
-                "PM 10: ${(it.lastOrNull()
-                    ?: 0f).format(2)}${resources.getString(R.string.pm_unit)}"
-            particulateMatter10ChartItem?.findViewById<TextView>(R.id.sensorTitleTextView)?.text =
+                "PM 10: ${pm10.format(2)}${resources.getString(R.string.pm_unit)}"
+            pm10ChartItem?.findViewById<TextView>(R.id.sensorTitleTextView)?.text =
                 pm10String
+
+            // Refresh chart
+            val entry = Entry((it.count() - 1).toFloat(), pm10)
+            pm10LineChart?.data?.addEntry(entry, 0)
+
+            pm10LineChart?.notifyDataSetChanged()
+            pm10LineChart?.invalidate()
         })
 
         // Set pm25 live data list observer
         sensorViewModel.getPM25LiveData().observe(viewLifecycleOwner, Observer {
+            if (it.count() == 0) return@Observer
+
+            // Set current
+            val pm25 = it.last()
             val pm25String =
-                "PM 2,5: ${(it.lastOrNull()
-                    ?: 0f).format(2)}${resources.getString(R.string.pm_unit)}"
-            particulateMatter25ChartItem?.findViewById<TextView>(R.id.sensorTitleTextView)?.text =
+                "PM 2,5: ${pm25.format(2)}${resources.getString(R.string.pm_unit)}"
+            pm25ChartItem?.findViewById<TextView>(R.id.sensorTitleTextView)?.text =
                 pm25String
+
+            // Refresh chart
+            val entry = Entry((it.count() - 1).toFloat(), pm25)
+            pm25LineChart?.data?.addEntry(entry, 0)
+
+            pm25LineChart?.notifyDataSetChanged()
+            pm25LineChart?.invalidate()
         })
 
         // Set sensor observer
@@ -96,11 +153,6 @@ class SensorFragment : Fragment() {
         sensorViewModel.setSensor(args.sensorId)
 
         return root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
     }
 
     private fun setSensorDataListener(serialNumber: String) {
@@ -166,38 +218,66 @@ class SensorFragment : Fragment() {
 
         temperatureChartItem = layoutInflater.inflate(R.layout.chart_item, null)
         humidityChartItem = layoutInflater.inflate(R.layout.chart_item, null)
-        particulateMatter25ChartItem = layoutInflater.inflate(R.layout.chart_item, null)
-        particulateMatter10ChartItem = layoutInflater.inflate(R.layout.chart_item, null)
+        pm25ChartItem = layoutInflater.inflate(R.layout.chart_item, null)
+        pm10ChartItem = layoutInflater.inflate(R.layout.chart_item, null)
 
+        // Add chart items to layout
         contentLinearLayout.addView(temperatureChartItem)
         contentLinearLayout.addView(humidityChartItem)
-        contentLinearLayout.addView(particulateMatter10ChartItem)
-        contentLinearLayout.addView(particulateMatter25ChartItem)
+        contentLinearLayout.addView(pm10ChartItem)
+        contentLinearLayout.addView(pm25ChartItem)
 
+        // Set chart items icon
         temperatureChartItem?.findViewById<ImageView>(R.id.sensorImageView)
             ?.setImageDrawable(resources.getDrawable(R.drawable.thermometer_icon, null))
 
         humidityChartItem?.findViewById<ImageView>(R.id.sensorImageView)
             ?.setImageDrawable(resources.getDrawable(R.drawable.humidity_icon, null))
 
-        particulateMatter10ChartItem?.findViewById<ImageView>(R.id.sensorImageView)
+        pm10ChartItem?.findViewById<ImageView>(R.id.sensorImageView)
             ?.setImageDrawable(resources.getDrawable(R.drawable.pm10_icon, null))
 
-        particulateMatter25ChartItem?.findViewById<ImageView>(R.id.sensorImageView)
+        pm25ChartItem?.findViewById<ImageView>(R.id.sensorImageView)
             ?.setImageDrawable(resources.getDrawable(R.drawable.pm25_icon, null))
 
-//        val temperatureLineChart: LineChart = root.findViewById(R.id.temperatureLineChart)
-//        val entryList = arrayListOf<Entry>()
-//        entryList.add(Entry(12f,5f))
-//        entryList.add(Entry(13f,7f))
-//        entryList.add(Entry(14f,3f))
-//        val dataSet = LineDataSet(entryList, "Label")
-//        //todo custom data set
-//        val lineData = LineData(dataSet)
-//        temperatureLineChart.data = lineData
-//        temperatureLineChart.invalidate()
-        //todo chart
+        // Get chart items chart
+        temperatureLineChart = temperatureChartItem?.findViewById(R.id.sensorLineChart)
+        humidityLineChart = humidityChartItem?.findViewById(R.id.sensorLineChart)
+        pm10LineChart = pm10ChartItem?.findViewById(R.id.sensorLineChart)
+        pm25LineChart = pm25ChartItem?.findViewById(R.id.sensorLineChart)
 
+        // All chart settings
+        allChartsSettings(temperatureLineChart, humidityLineChart, pm10LineChart, pm25LineChart)
+    }
+
+    private fun allChartsSettings(vararg charts: LineChart?) {
+        val labels = arrayOf(
+            "°C",
+            "%",
+            resources.getString(R.string.pm_unit),
+            resources.getString(R.string.pm_unit)
+        )
+        for ((i, chart) in charts.withIndex()) {
+            chart?.description = null
+            chart?.isScaleYEnabled = false
+//            chart?.isAutoScaleMinMaxEnabled = true
+            chart?.isHighlightPerTapEnabled = false
+            chart?.isHighlightPerDragEnabled = false
+
+            val dataSet = LineDataSet(mutableListOf<Entry>(), labels[i])
+            dataSet.mode = LineDataSet.Mode.CUBIC_BEZIER
+            dataSet.setCircleColors(intArrayOf(R.color.colorAccent), requireContext())
+            dataSet.setColors(intArrayOf(R.color.colorAccent), requireContext())
+
+            chart?.xAxis?.valueFormatter =
+                XAxisFormatter(sensorViewModel.getTimestampLiveData().value!!)
+            chart?.axisLeft?.valueFormatter =
+                YAxisFormatter()
+            chart?.axisRight?.valueFormatter =
+                YAxisFormatter()
+            chart?.data = LineData(dataSet)
+            chart?.data?.setValueFormatter(YAxisFormatter())
+        }
     }
 
     override fun onDestroyView() {
