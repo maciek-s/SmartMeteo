@@ -22,5 +22,6 @@
     <string name="confirm_delete_sensor">Are you sure you want to delete this sensor?</string>
     <string name="firebase_error">Firebase error</string>
     <string name="check_internet_connection">Check internet connection</string>
-
+    <string name="sensor_image_view_description">Sensor image</string>
+    <string name="pm_unit">µg/m³</string>
 </resources>

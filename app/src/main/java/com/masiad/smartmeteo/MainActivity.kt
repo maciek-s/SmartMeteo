@@ -29,6 +29,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
 
+    private lateinit var fab: FloatingActionButton
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -41,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         sensorListViewModel =
             ViewModelProviders.of(this).get(SensorsListViewModel::class.java)
 
-        val fab: FloatingActionButton = findViewById(R.id.fab)
+        fab = findViewById(R.id.fab)
         fab.setOnClickListener { view ->
             showAddSensorModal()
 
@@ -155,5 +157,13 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    public fun showFloatingActionButton() {
+        fab.show()
+    }
+
+    public fun hideFloatingActionButton() {
+        fab.hide()
     }
 }
