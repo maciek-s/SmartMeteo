@@ -4,19 +4,19 @@ import android.os.Bundle
 import android.view.Menu
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.navigation.NavigationView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.Navigation
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.database.*
 import com.masiad.smartmeteo.data.Sensor
 import com.masiad.smartmeteo.ui.sensors_list.SensorsListViewModel
@@ -24,6 +24,9 @@ import com.masiad.smartmeteo.utils.InternetConnection
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
+    companion object {
+        val TAG: String = MainActivity::class.java.simpleName
+    }
 
     private lateinit var sensorListViewModel: SensorsListViewModel
 
@@ -40,7 +43,9 @@ class MainActivity : AppCompatActivity() {
         // Enable Firebase offline
         try {
             FirebaseDatabase.getInstance().setPersistenceEnabled(true)
-        } catch (e: DatabaseException) { e.printStackTrace() }
+        } catch (e: DatabaseException) {
+            e.printStackTrace()
+        }
 
         sensorListViewModel =
             ViewModelProviders.of(this).get(SensorsListViewModel::class.java)
@@ -137,8 +142,11 @@ class MainActivity : AppCompatActivity() {
                             )
                         )
                     )
-                    Navigation.findNavController(this@MainActivity, R.id.nav_host_fragment)
-                        .navigate(R.id.nav_sensors_list)
+                    val navController =
+                        Navigation.findNavController(this@MainActivity, R.id.nav_host_fragment)
+                    if (navController.currentDestination?.id != R.id.nav_sensors_list) {
+                        navController.navigate(R.id.nav_sensors_list)
+                    }
                     // Move to Sensor Fragment
                 } else {
                     // Show error snackbar

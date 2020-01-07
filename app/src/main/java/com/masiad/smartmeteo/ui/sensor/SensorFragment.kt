@@ -1,5 +1,6 @@
 package com.masiad.smartmeteo.ui.sensor
 
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
@@ -144,15 +145,29 @@ class SensorFragment : Fragment() {
         })
 
         // Set sensor observer
-        sensorViewModel.sensor.observe(viewLifecycleOwner, Observer {
+        // todo change to observe if data not refresh
+        sensorViewModel.sensor.observeOnce(viewLifecycleOwner, Observer {
             (requireActivity() as AppCompatActivity).supportActionBar?.title = it.sensorName
             setSensorDataListener(it.serialNumber ?: "Empty")
             //todo handle empty serial
         })
+
         // Set selected sensor
+        val sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
+        val favouriteSensorId = sharedPref.getInt(FAVOURITE_SENSOR_ID_KEY, -1)
+        sensorViewModel.isFavourite = favouriteSensorId == args.sensorId
         sensorViewModel.setSensor(args.sensorId)
 
         return root
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        if (sensorViewModel.isFavourite) {
+            // Insert last data to model
+            sensorViewModel.insertLastSensorValues()
+        }
     }
 
     private fun setSensorDataListener(serialNumber: String) {

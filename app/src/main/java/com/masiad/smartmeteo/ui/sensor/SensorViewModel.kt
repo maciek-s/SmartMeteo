@@ -8,7 +8,9 @@ import androidx.lifecycle.viewModelScope
 import com.masiad.smartmeteo.data.AppRoomDatabase
 import com.masiad.smartmeteo.data.Sensor
 import com.masiad.smartmeteo.data.SensorRepository
+import com.masiad.smartmeteo.data.SensorValues
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class SensorViewModel(application: Application) : AndroidViewModel(application) {
     companion object {
@@ -25,6 +27,8 @@ class SensorViewModel(application: Application) : AndroidViewModel(application) 
     private val humidityLiveDataList = MutableLiveData<MutableList<Float>>()
     private val pm10LiveDataList = MutableLiveData<MutableList<Float>>()
     private val pm25LiveDataList = MutableLiveData<MutableList<Float>>()
+
+    var isFavourite = false
 
     init {
         // Gets reference to SensorDao from appRoomDatabase to construct
@@ -88,6 +92,21 @@ class SensorViewModel(application: Application) : AndroidViewModel(application) 
     fun addCurrentPM25(pm25: Float) {
         pm25LiveDataList.value?.add(pm25)
         pm25LiveDataList.value = pm25LiveDataList.value
+    }
+
+    fun insertLastSensorValues() {
+        val sensorValues = SensorValues(
+            sensor.value!!.sensorId,
+            sensor.value!!.sensorName!!,
+            timestampLiveDataList.value!!.last(),
+            temperatureLiveDataList.value!!.last(),
+            humidityLiveDataList.value!!.last(),
+            pm10LiveDataList.value!!.last(),
+            pm25LiveDataList.value!!.last()
+        )
+        runBlocking {
+            repository.insertSensorValues(sensorValues)
+        }
     }
 
 }

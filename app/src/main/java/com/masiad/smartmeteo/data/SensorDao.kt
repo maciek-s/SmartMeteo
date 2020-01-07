@@ -22,4 +22,10 @@ interface SensorDao {
 
     @Delete
     suspend fun delete(sensor: Sensor)
+
+    @Query("SELECT * FROM senor_values_table WHERE favouriteId =(:favouriteId)")
+    suspend fun getSensorValues(favouriteId: Int): SensorValues
+
+    @Insert(entity = SensorValues::class, onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSensorValues(sensorValues: SensorValues): Long
 }

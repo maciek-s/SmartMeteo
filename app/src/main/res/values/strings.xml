@@ -24,4 +24,6 @@
     <string name="check_internet_connection">Check internet connection</string>
     <string name="sensor_image_view_description">Sensor image</string>
     <string name="pm_unit">µg/m³</string>
+    <string name="live_measurement">Live measurement</string>
+    <string name="last_update">Last update:</string>
 </resources>
