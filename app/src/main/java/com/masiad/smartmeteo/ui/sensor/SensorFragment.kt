@@ -27,6 +27,7 @@ import com.masiad.smartmeteo.MainActivity
 import com.masiad.smartmeteo.R
 import com.masiad.smartmeteo.chart.XAxisFormatter
 import com.masiad.smartmeteo.chart.YAxisFormatter
+import com.masiad.smartmeteo.data.AppKotpref
 import com.masiad.smartmeteo.utils.*
 
 class SensorFragment : Fragment() {
@@ -153,8 +154,7 @@ class SensorFragment : Fragment() {
         })
 
         // Set selected sensor
-        val sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
-        val favouriteSensorId = sharedPref.getInt(FAVOURITE_SENSOR_ID_KEY, -1)
+        val favouriteSensorId = AppKotpref.favouriteSensorId
         sensorViewModel.isFavourite = favouriteSensorId == args.sensorId
         sensorViewModel.setSensor(args.sensorId)
 

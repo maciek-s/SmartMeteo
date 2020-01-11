@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,8 +15,13 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.chibatching.kotpref.Kotpref
+import com.chibatching.kotpref.blockingBulk
 import com.masiad.smartmeteo.R
+import com.masiad.smartmeteo.data.AppKotpref
 import com.masiad.smartmeteo.utils.FAVOURITE_SENSOR_ID_KEY
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.runBlocking
 
 class SensorsListFragment : Fragment() {
     companion object {
@@ -25,7 +31,6 @@ class SensorsListFragment : Fragment() {
     private lateinit var sensorListViewModel: SensorsListViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: SensorsListAdapter
-    private lateinit var sharedPref: SharedPreferences
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -37,8 +42,7 @@ class SensorsListFragment : Fragment() {
 
         val root = inflater.inflate(R.layout.fragment_sensors_list, container, false)
 
-        sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
-        val favouriteSensorId = sharedPref.getInt(FAVOURITE_SENSOR_ID_KEY, -1)
+        val favouriteSensorId = AppKotpref.favouriteSensorId
 
         val sensorAdapter = object : SensorsListAdapter(requireContext(), favouriteSensorId){
             override fun onItemClick(sensorId: Int) {
@@ -48,10 +52,7 @@ class SensorsListFragment : Fragment() {
 
             override fun onFavouriteItemClick(sensorId: Int) {
                 // save default in shared preferences
-                with(sharedPref.edit()) {
-                    putInt(FAVOURITE_SENSOR_ID_KEY, sensorId)
-                    apply()
-                }
+                AppKotpref.favouriteSensorId = sensorId
             }
 
             override fun onLongItemClick(sensorId: Int): Boolean {
@@ -78,13 +79,12 @@ class SensorsListFragment : Fragment() {
                 sensorListViewModel.deleteById(sensorId)
                 adapter.notifyDataSetChanged()
                 // Remove from favourite
-                val favouriteSensorId = sharedPref.getInt(FAVOURITE_SENSOR_ID_KEY, -1)
-                if (favouriteSensorId == sensorId) {
-                    with(sharedPref.edit()) {
-                        putInt(FAVOURITE_SENSOR_ID_KEY, -1)
-                        apply()
+                if (AppKotpref.favouriteSensorId == sensorId) {
+                    AppKotpref.blockingBulk {
+                        favouriteSensorId = -1
                     }
                 }
+                Log.i(TAG, "Delete favourite: " + AppKotpref.favouriteSensorId)
             }
             .setNegativeButton(
                 android.R.string.cancel, null

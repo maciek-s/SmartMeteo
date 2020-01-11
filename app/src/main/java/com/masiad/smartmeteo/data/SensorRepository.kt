@@ -17,7 +17,7 @@ class SensorRepository(private val sensorDao: SensorDao) {
         return sensorDao.deleteById(sensorID)
     }
 
-    suspend fun getSensorValues(favouriteId: Int): SensorValues {
+    suspend fun getSensorValues(favouriteId: Int): SensorValues? {
         return sensorDao.getSensorValues(favouriteId)
     }
 

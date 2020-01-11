@@ -18,6 +18,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: SensorRepository
 
     private val sensorValues = MutableLiveData<SensorValues>()
+    private val emptyLiveData = MutableLiveData<Boolean>()
 
     init {
         // Gets reference to SensorDao from appRoomDatabase to construct
@@ -28,12 +29,22 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     fun setFavouriteSensorId(favouriteSensorId: Int) {
         viewModelScope.launch {
-            sensorValues.value = repository.getSensorValues(favouriteSensorId)
+            repository.getSensorValues(favouriteSensorId).let {
+                if (it != null) {
+                    sensorValues.value = it
+                } else {
+                    emptyLiveData.value = true
+                }
+            }
         }
     }
 
     fun getSensorValuesLiveData(): LiveData<SensorValues> {
         return sensorValues
+    }
+
+    fun getEmptyListLiveData(): LiveData<Boolean> {
+        return emptyLiveData
     }
 
 

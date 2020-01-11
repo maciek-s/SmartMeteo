@@ -2,6 +2,7 @@ package com.masiad.smartmeteo.ui.home
 
 import android.content.Context
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.Navigation
 import com.masiad.smartmeteo.R
+import com.masiad.smartmeteo.data.AppKotpref
 import com.masiad.smartmeteo.utils.FAVOURITE_SENSOR_ID_KEY
 import com.masiad.smartmeteo.utils.format
 import java.util.*
@@ -40,6 +42,7 @@ class HomeFragment : Fragment() {
         val pm25Item = root.findViewById<View>(R.id.pm25Item)
         val updateTimeTextView: TextView = root.findViewById(R.id.updateTimeTextView)
         val showLiveFavouriteSensor: Button = root.findViewById(R.id.showLiveFavouriteSensor)
+
         homeViewModel.getSensorValuesLiveData().observe(viewLifecycleOwner, Observer {
             favouriteSensorNameTextView.text = it.name
 
@@ -66,24 +69,27 @@ class HomeFragment : Fragment() {
             }
         })
 
-        val sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
-        val favouriteSensorId = sharedPref.getInt(FAVOURITE_SENSOR_ID_KEY, -1)
+        val favouriteSensorId = AppKotpref.favouriteSensorId
+
+        homeViewModel.getEmptyListLiveData().observe(viewLifecycleOwner, Observer {
+            if (it == true) {
+                updateTimeTextView.text = "No data. Open live measurement"
+                showLiveFavouriteSensor.setOnClickListener { _ ->
+                    Navigation.findNavController(root).navigate(HomeFragmentDirections.actionNavHomeToSensorFragment(favouriteSensorId))
+                }
+            }
+        })
 
         if (favouriteSensorId != -1) {
             homeViewModel.setFavouriteSensorId(favouriteSensorId)
+        } else {
+            temperatureItem.visibility = View.GONE
+            humidityItem.visibility = View.GONE
+            pm10Item.visibility = View.GONE
+            pm25Item.visibility = View.GONE
+            showLiveFavouriteSensor.visibility = View.GONE
         }
 
         return root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        view.findViewById<View>(R.id.showLiveFavouriteSensor).setOnClickListener {
-            //            val action = HomeFragmentDirections
-//                    .actionHomeFragmentToHomeSecondFragment("From HomeFragment")
-//            NavHostFragment.findNavController(this@HomeFragment)
-//                    .navigate(action)
-        }
     }
 }
