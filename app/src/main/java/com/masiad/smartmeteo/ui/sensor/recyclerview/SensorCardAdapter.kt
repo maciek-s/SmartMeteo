@@ -63,7 +63,7 @@ class SensorCardAdapter(val sensorCardList: List<SensorCard>) :
             context.resources.getString(sensorCardItem.sensorType.nameId)
         val unit = context.resources.getString(sensorCardItem.sensorType.unitId)
         holder.sensorValueTextView.text = String.format("%.1f%s", sensorCardItem.currentValue, unit)
-        holder.chartAvgTextView.text = String.format("%.1f%s", sensorCardItem.avgSum, unit)
+        holder.chartAvgTextView.text = String.format("%.1f%s", sensorCardItem.avgSum / sensorCardItem.chartValues.count(), unit)
         holder.chartMaxTextView.text = String.format("%.1f%s", sensorCardItem.max, unit)
         holder.chartMinTextView.text = String.format("%.1f%s", sensorCardItem.min, unit)
 

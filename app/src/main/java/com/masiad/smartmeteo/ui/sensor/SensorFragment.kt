@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.data.Entry
 import com.masiad.smartmeteo.MainActivity
 import com.masiad.smartmeteo.R
-import com.masiad.smartmeteo.data.AppKotpref
 import com.masiad.smartmeteo.ui.sensor.recyclerview.SensorCardAdapter
 import com.masiad.smartmeteo.utils.observeOnce
 
@@ -45,14 +44,15 @@ class SensorFragment : Fragment() {
         (activity as MainActivity).hideFloatingActionButton()
 
         // Bind recycler view
-        sensorValuesViewAdapter = SensorCardAdapter(sensorViewModel.sensorCardList)
+        sensorValuesViewAdapter = SensorCardAdapter(sensorViewModel.getSensorCardsList())
         sensorValuesRecyclerView =
             root.findViewById<RecyclerView>(R.id.sensorValuesRecyclerView).apply {
                 adapter = sensorValuesViewAdapter
             }
 
-        // Observes
-        sensorViewModel.sensor.observeOnce(viewLifecycleOwner, Observer {
+        // Set sensor room observer
+        sensorViewModel.getSensorRoom().observeOnce(viewLifecycleOwner, Observer {
+            // After sensor loaded from room set up view
             (requireActivity() as AppCompatActivity).supportActionBar?.title = it.sensorName
 
             sensorViewModel.getSensorFirebaseValues().observe(viewLifecycleOwner, Observer { list ->
@@ -82,21 +82,21 @@ class SensorFragment : Fragment() {
                         } else if (value < minArray[i]) {
                             minArray[i] = value
                         }
-                        sensorViewModel.sensorCardList[i].chartValues.add(
-                            Entry(
-                                list.indexOf(
-                                    sensorFirebase
-                                ).toFloat(), value
-                            )
+                        sensorViewModel.addSensorCardChartValue(
+                            i,
+                            Entry(list.indexOf(sensorFirebase).toFloat(), value)
                         )
                     }
                 }
 
                 for (i in 0 until 4) {
-                    sensorViewModel.sensorCardList[i].currentValue = currentArray[i]
-                    sensorViewModel.sensorCardList[i].avgSum = averageArray[i] / count
-                    sensorViewModel.sensorCardList[i].max = maxArray[i]
-                    sensorViewModel.sensorCardList[i].min = minArray[i]
+                    sensorViewModel.setSensorCardValues(
+                        i,
+                        currentArray[i],
+                        averageArray[i],
+                        maxArray[i],
+                        minArray[i]
+                    )
                 }
 
                 sensorValuesViewAdapter.notifyDataSetChanged()
@@ -109,10 +109,7 @@ class SensorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Checking is opened favourite sensor
-        val favouriteSensorId = AppKotpref.favouriteSensorId
-        sensorViewModel.isFavourite = favouriteSensorId == args.sensorId
-        sensorViewModel.setSensor(args.sensorId)
+        sensorViewModel.setSensorRoom(args.sensorId)
     }
 
     override fun onDestroyView() {
