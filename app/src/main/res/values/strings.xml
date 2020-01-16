@@ -26,4 +26,16 @@
     <string name="pm_unit">µg/m³</string>
     <string name="live_measurement">Live measurement</string>
     <string name="last_update">Last update:</string>
+    <string name="drop_down_description">Drop down description</string>
+    <string name="chart_average">Avg:</string>
+    <string name="chart_max">Max:</string>
+    <string name="chart_min">Min:</string>
+    <string name="temp">Temperature</string>
+    <string name="temp_unit">°C</string>
+    <string name="humid">Humidity</string>
+    <string name="humid_unit">%</string>
+    <string name="pm10">PM10</string>
+    <string name="pm10_unit">µg/m³</string>
+    <string name="pm25">PM2.5</string>
+    <string name="pm25_unit">µg/m³</string>
 </resources>
