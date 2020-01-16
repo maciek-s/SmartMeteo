@@ -2,6 +2,10 @@ package com.masiad.smartmeteo.utils
 
 import java.io.IOException
 
+/**
+ * Internet Connection
+ * Ping 8.8.8.8 and determines internet access
+ */
 object InternetConnection {
     fun isOnline(): Boolean {
         val runtime = Runtime.getRuntime()

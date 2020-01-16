@@ -22,6 +22,9 @@ import com.masiad.smartmeteo.utils.FIREBASE_PM25_KEY
 import com.masiad.smartmeteo.utils.FIREBASE_TEMPERATURE_KEY
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel for [SensorFragment]
+ */
 class SensorViewModel(application: Application) : AndroidViewModel(application) {
     companion object {
         val TAG: String = SensorViewModel::class.java.simpleName
@@ -101,22 +104,6 @@ class SensorViewModel(application: Application) : AndroidViewModel(application) 
 
         }
         return sensorFirebaseList
-    }
-
-    //todo below
-    fun insertLastSensorValues() {
-//        val sensorValues = SensorValues(
-//            sensor.value!!.sensorId,
-//            sensor.value!!.sensorName!!,
-//            timestampLiveDataList.value!!.last(),
-//            temperatureLiveDataList.value!!.last(),
-//            humidityLiveDataList.value!!.last(),
-//            pm10LiveDataList.value!!.last(),
-//            pm25LiveDataList.value!!.last()
-//        )
-//        runBlocking {
-//            repository.insertSensorValues(sensorValues)
-//        }
     }
 
 }

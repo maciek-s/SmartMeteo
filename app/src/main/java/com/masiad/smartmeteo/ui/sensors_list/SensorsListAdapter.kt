@@ -10,6 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.masiad.smartmeteo.R
 import com.masiad.smartmeteo.data.Sensor
 
+/**
+ * Sensor List [RecyclerView.Adapter]
+ */
 abstract class SensorsListAdapter internal constructor(
     val context: Context, val favouriteSensorId: Int
 ) : RecyclerView.Adapter<SensorsListAdapter.SensorsViewHolder>() {

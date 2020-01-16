@@ -2,6 +2,9 @@ package com.masiad.smartmeteo.ui.sensor.recyclerview
 
 import com.github.mikephil.charting.data.Entry
 
+/**
+ * RecyclerView card item sensor representation
+ */
 data class SensorCard(
     val sensorType: SensorType,
     var currentValue: Float = 0f,

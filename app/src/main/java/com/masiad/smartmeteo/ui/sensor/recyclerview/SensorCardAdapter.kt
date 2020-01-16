@@ -17,7 +17,9 @@ import com.masiad.smartmeteo.chart.YAxisFormatter
 import com.masiad.smartmeteo.utils.dp
 import com.masiad.smartmeteo.utils.slideAnimate
 
-
+/**
+ * Sensor Card [RecyclerView.Adapter]
+ */
 class SensorCardAdapter(val sensorCardList: List<SensorCard>) :
     RecyclerView.Adapter<SensorCardAdapter.ViewHolder>() {
 
@@ -97,7 +99,6 @@ class SensorCardAdapter(val sensorCardList: List<SensorCard>) :
         val chartAvgTextView: TextView = itemView.findViewById(R.id.chartAvgTextView)
         val chartMaxTextView: TextView = itemView.findViewById(R.id.chartMaxTextView)
         val chartMinTextView: TextView = itemView.findViewById(R.id.chartMinTextView)
-        val chartNormalView: ConstraintLayout = itemView.findViewById(R.id.chartNormalView)
         val sensorLineChart: LineChart = itemView.findViewById(R.id.sensorLineChart)
         val chartExpandView: ConstraintLayout = itemView.findViewById(R.id.chartExpandView)
 

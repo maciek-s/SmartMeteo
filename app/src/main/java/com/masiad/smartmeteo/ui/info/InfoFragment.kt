@@ -10,6 +10,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.masiad.smartmeteo.R
 
+/**
+ * Info [Fragment]
+ */
 class InfoFragment : Fragment() {
     companion object {
         val TAG: String = InfoFragment::class.java.simpleName

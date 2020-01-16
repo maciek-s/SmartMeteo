@@ -1,5 +1,8 @@
 package com.masiad.smartmeteo.ui.sensor.firebase
 
+/**
+ * Firebase Sensor Values Representation
+ */
 data class SensorFirebase(
     val timestamp: Long,
     val temperature: Float,

@@ -3,6 +3,9 @@ package com.masiad.smartmeteo.data
 import androidx.lifecycle.LiveData
 import androidx.room.*
 
+/**
+ * [AppRoomDatabase] Sensor DAO
+ */
 @Dao
 interface SensorDao {
     @Query("SELECT * FROM sensors_table")
@@ -23,9 +26,4 @@ interface SensorDao {
     @Delete
     suspend fun delete(sensor: Sensor)
 
-    @Query("SELECT * FROM senor_values_table WHERE favouriteId =(:favouriteId)")
-    suspend fun getSensorValues(favouriteId: Int): SensorValues
-
-    @Insert(entity = SensorValues::class, onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSensorValues(sensorValues: SensorValues): Long
 }

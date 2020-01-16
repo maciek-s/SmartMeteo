@@ -4,6 +4,9 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.masiad.smartmeteo.R
 
+/**
+ * Sensor Type helper class
+ */
 enum class SensorType(@DrawableRes val resourceId: Int, @StringRes val nameId: Int, @StringRes val unitId: Int) {
     TEMPERATURE(R.drawable.thermometer_icon, R.string.temp, R.string.temp_unit),
     HUMIDITY(R.drawable.humidity_icon, R.string.humid, R.string.humid_unit),

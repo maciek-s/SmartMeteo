@@ -6,16 +6,6 @@
     app:startDestination="@id/nav_info">
 
     <fragment
-        android:id="@+id/nav_home"
-        android:name="com.masiad.smartmeteo.ui.home.HomeFragment"
-        android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home">
-        <action
-            android:id="@+id/action_nav_home_to_sensorFragment"
-            app:destination="@id/nav_sensor" />
-    </fragment>
-
-    <fragment
         android:id="@+id/nav_sensors_list"
         android:name="com.masiad.smartmeteo.ui.sensors_list.SensorsListFragment"
         android:label="@string/menu_sensors"

@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity() {
 
         // Enable Firebase offline
         try {
+            //todo create app
             FirebaseDatabase.getInstance().setPersistenceEnabled(true)
         } catch (e: DatabaseException) {
             e.printStackTrace()
@@ -52,10 +53,10 @@ class MainActivity : AppCompatActivity() {
             ViewModelProviders.of(this).get(SensorsListViewModel::class.java)
 
         fab = findViewById(R.id.fab)
-        fab.setOnClickListener { view ->
+        fab.setOnClickListener { _ ->
             showAddSensorModal()
-
         }
+
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
@@ -63,7 +64,7 @@ class MainActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_home, R.id.nav_sensors_list, R.id.nav_info
+                R.id.nav_sensors_list, R.id.nav_info
             ), drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -84,7 +85,7 @@ class MainActivity : AppCompatActivity() {
             // Add action buttons
             .setPositiveButton(
                 R.string.add
-            ) { dialog, id ->
+            ) { _, _ ->
                 val sensorName = layout.findViewById<TextView>(R.id.fieldSensorName).text
                 val serialNumber = layout.findViewById<TextView>(R.id.fieldSerialNumber).text
                 if (isSensorFieldsCorrectly(sensorName, serialNumber)) {
@@ -96,7 +97,7 @@ class MainActivity : AppCompatActivity() {
             }
             .setNegativeButton(
                 android.R.string.cancel
-            ) { dialog, id ->
+            ) { dialog, _ ->
                 dialog.cancel()
             }
         builder.show()
@@ -139,7 +140,7 @@ class MainActivity : AppCompatActivity() {
                         )
                     } != null) {
                     // Serial exists add sensor to database
-                    val idx = sensorListViewModel.insert(
+                    sensorListViewModel.insert(
                         Sensor(
                             sensorName = sensorName, serialNumber = serialNumber?.toUpperCase(
                                 Locale.ROOT

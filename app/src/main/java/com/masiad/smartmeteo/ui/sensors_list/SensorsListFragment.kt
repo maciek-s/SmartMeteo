@@ -1,8 +1,6 @@
 package com.masiad.smartmeteo.ui.sensors_list
 
 import android.app.AlertDialog
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,14 +13,13 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.chibatching.kotpref.Kotpref
 import com.chibatching.kotpref.blockingBulk
 import com.masiad.smartmeteo.R
 import com.masiad.smartmeteo.data.AppKotpref
-import com.masiad.smartmeteo.utils.FAVOURITE_SENSOR_ID_KEY
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.runBlocking
 
+/**
+ * Sensor List [Fragment]
+ */
 class SensorsListFragment : Fragment() {
     companion object {
         val TAG: String = SensorsListFragment::class.java.simpleName
@@ -33,21 +30,25 @@ class SensorsListFragment : Fragment() {
     private lateinit var adapter: SensorsListAdapter
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         sensorListViewModel =
-                ViewModelProviders.of(this).get(SensorsListViewModel::class.java)
+            ViewModelProviders.of(this).get(SensorsListViewModel::class.java)
 
         val root = inflater.inflate(R.layout.fragment_sensors_list, container, false)
 
         val favouriteSensorId = AppKotpref.favouriteSensorId
 
-        val sensorAdapter = object : SensorsListAdapter(requireContext(), favouriteSensorId){
+        val sensorAdapter = object : SensorsListAdapter(requireContext(), favouriteSensorId) {
             override fun onItemClick(sensorId: Int) {
                 Navigation.findNavController(root)
-                    .navigate(SensorsListFragmentDirections.actionNavSensorsListToSensorFragment(sensorId))
+                    .navigate(
+                        SensorsListFragmentDirections.actionNavSensorsListToSensorFragment(
+                            sensorId
+                        )
+                    )
             }
 
             override fun onFavouriteItemClick(sensorId: Int) {
@@ -89,7 +90,7 @@ class SensorsListFragment : Fragment() {
             .setNegativeButton(
                 android.R.string.cancel, null
             )
-        .show()
+            .show()
 
         return true
     }
@@ -100,7 +101,12 @@ class SensorsListFragment : Fragment() {
         recyclerView = view.findViewById(R.id.recyclerview)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.addItemDecoration(DividerItemDecoration(recyclerView.context, LinearLayoutManager.VERTICAL))
+        recyclerView.addItemDecoration(
+            DividerItemDecoration(
+                recyclerView.context,
+                LinearLayoutManager.VERTICAL
+            )
+        )
 
     }
 }

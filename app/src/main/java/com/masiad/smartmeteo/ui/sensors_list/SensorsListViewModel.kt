@@ -8,6 +8,9 @@ import com.masiad.smartmeteo.data.AppRoomDatabase
 import com.masiad.smartmeteo.ui.sensor.SensorViewModel
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel for [SensorsListFragment]
+ */
 class SensorsListViewModel(application: Application) : AndroidViewModel(application) {
     companion object {
         val TAG: String = SensorsListViewModel::class.java.simpleName

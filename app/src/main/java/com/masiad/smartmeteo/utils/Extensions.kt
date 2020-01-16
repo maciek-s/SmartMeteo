@@ -9,8 +9,10 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 
+// Float format
 fun Float.format(digits: Int) = "%.${digits}f".format(this)
 
+// Single(once) live data observer
 fun <T> LiveData<T>.observeOnce(lifecycleOwner: LifecycleOwner, observer: Observer<T>) {
     observe(lifecycleOwner, object : Observer<T> {
         override fun onChanged(t: T?) {
@@ -20,12 +22,14 @@ fun <T> LiveData<T>.observeOnce(lifecycleOwner: LifecycleOwner, observer: Observ
     })
 }
 
+// Dp converter
 val Int.dp: Int
     get() = (this * Resources.getSystem().displayMetrics.density + 0.5f).toInt()
 
 val Float.dp: Int
     get() = (this * Resources.getSystem().displayMetrics.density + 0.5f).toInt()
 
+// View height animation
 fun View.slideAnimate(currentHeight: Int, newHeight: Int) {
     val slideAnimator = ValueAnimator
         .ofInt(currentHeight, newHeight)

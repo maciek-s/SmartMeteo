@@ -17,6 +17,9 @@ import com.masiad.smartmeteo.data.AppKotpref
 import com.masiad.smartmeteo.ui.sensor.recyclerview.SensorCardAdapter
 import com.masiad.smartmeteo.utils.observeOnce
 
+/**
+ * Sensor [Fragment]
+ */
 class SensorFragment : Fragment() {
     companion object {
         val TAG: String = SensorFragment::class.java.simpleName
@@ -110,15 +113,6 @@ class SensorFragment : Fragment() {
         val favouriteSensorId = AppKotpref.favouriteSensorId
         sensorViewModel.isFavourite = favouriteSensorId == args.sensorId
         sensorViewModel.setSensor(args.sensorId)
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-        if (sensorViewModel.isFavourite) {
-            // Insert last data to model
-            sensorViewModel.insertLastSensorValues()
-        }
     }
 
     override fun onDestroyView() {

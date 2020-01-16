@@ -2,6 +2,9 @@ package com.masiad.smartmeteo.data
 
 import androidx.lifecycle.LiveData
 
+/**
+ * [SensorDao] Repository
+ */
 class SensorRepository(private val sensorDao: SensorDao) {
     val allSensors: LiveData<List<Sensor>> = sensorDao.getAll()
 
@@ -15,13 +18,5 @@ class SensorRepository(private val sensorDao: SensorDao) {
 
     suspend fun deleteById(sensorID: Int) {
         return sensorDao.deleteById(sensorID)
-    }
-
-    suspend fun getSensorValues(favouriteId: Int): SensorValues? {
-        return sensorDao.getSensorValues(favouriteId)
-    }
-
-    suspend fun insertSensorValues(sensorValues: SensorValues): Long {
-        return sensorDao.insertSensorValues(sensorValues)
     }
 }
