@@ -1,4 +1,4 @@
-package com.masiad.smartmeteo.data
+package com.masiad.smartmeteo.utils
 
 import android.content.SharedPreferences
 import com.chibatching.kotpref.KotprefModel
@@ -6,6 +6,6 @@ import com.chibatching.kotpref.KotprefModel
 /**
  * [SharedPreferences] saved data object representation
  */
-object AppKotpref : KotprefModel() {
+object AppPreferences : KotprefModel() {
     var favouriteSensorId by intPref(default = -1)
 }

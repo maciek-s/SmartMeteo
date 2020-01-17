@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.chibatching.kotpref.blockingBulk
 import com.masiad.smartmeteo.R
-import com.masiad.smartmeteo.data.AppKotpref
+import com.masiad.smartmeteo.utils.AppPreferences
 
 /**
  * Sensor List [Fragment]
@@ -39,21 +39,19 @@ class SensorsListFragment : Fragment() {
 
         val root = inflater.inflate(R.layout.fragment_sensors_list, container, false)
 
-        val favouriteSensorId = AppKotpref.favouriteSensorId
+        val favouriteSensorId = AppPreferences.favouriteSensorId
 
         val sensorAdapter = object : SensorsListAdapter(requireContext(), favouriteSensorId) {
             override fun onItemClick(sensorId: Int) {
                 Navigation.findNavController(root)
-                    .navigate(
-                        SensorsListFragmentDirections.actionNavSensorsListToSensorFragment(
-                            sensorId
-                        )
-                    )
+                    .navigate(SensorsListFragmentDirections.actionNavSensorsListToSensorFragment().apply {
+                        setSensorId(sensorId)
+                    })
             }
 
             override fun onFavouriteItemClick(sensorId: Int) {
                 // save default in shared preferences
-                AppKotpref.favouriteSensorId = sensorId
+                AppPreferences.favouriteSensorId = sensorId
             }
 
             override fun onLongItemClick(sensorId: Int): Boolean {
@@ -80,12 +78,12 @@ class SensorsListFragment : Fragment() {
                 sensorListViewModel.deleteById(sensorId)
                 adapter.notifyDataSetChanged()
                 // Remove from favourite
-                if (AppKotpref.favouriteSensorId == sensorId) {
-                    AppKotpref.blockingBulk {
+                if (AppPreferences.favouriteSensorId == sensorId) {
+                    AppPreferences.blockingBulk {
                         favouriteSensorId = -1
                     }
                 }
-                Log.i(TAG, "Delete favourite: " + AppKotpref.favouriteSensorId)
+                Log.i(TAG, "Delete favourite: " + AppPreferences.favouriteSensorId)
             }
             .setNegativeButton(
                 android.R.string.cancel, null

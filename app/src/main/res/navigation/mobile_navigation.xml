@@ -27,6 +27,7 @@
         tools:layout="@layout/sensor_fragment">
         <argument
             android:name="sensorId"
-            app:argType="integer" />
+            app:argType="integer"
+            android:defaultValue="-1" />
     </fragment>
 </navigation>

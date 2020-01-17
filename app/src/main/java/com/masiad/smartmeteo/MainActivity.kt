@@ -14,11 +14,13 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.chibatching.kotpref.Kotpref
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.masiad.smartmeteo.data.Sensor
 import com.masiad.smartmeteo.ui.sensors_list.SensorsListViewModel
 import com.masiad.smartmeteo.utils.InternetConnection
@@ -41,14 +43,6 @@ class MainActivity : AppCompatActivity() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        // Enable Firebase offline
-        try {
-            //todo create app
-            FirebaseDatabase.getInstance().setPersistenceEnabled(true)
-        } catch (e: DatabaseException) {
-            e.printStackTrace()
-        }
-
         sensorListViewModel =
             ViewModelProviders.of(this).get(SensorsListViewModel::class.java)
 
@@ -69,9 +63,6 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-
-        // Init kotpref
-        Kotpref.init(this)
 
     }
 

@@ -1,6 +1,7 @@
 package com.masiad.smartmeteo.ui.sensor
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,7 @@ import com.github.mikephil.charting.data.Entry
 import com.masiad.smartmeteo.MainActivity
 import com.masiad.smartmeteo.R
 import com.masiad.smartmeteo.ui.sensor.recyclerview.SensorCardAdapter
+import com.masiad.smartmeteo.utils.AppPreferences
 import com.masiad.smartmeteo.utils.observeOnce
 
 /**
@@ -50,58 +52,7 @@ class SensorFragment : Fragment() {
                 adapter = sensorValuesViewAdapter
             }
 
-        // Set sensor room observer
-        sensorViewModel.getSensorRoom().observeOnce(viewLifecycleOwner, Observer {
-            // After sensor loaded from room set up view
-            (requireActivity() as AppCompatActivity).supportActionBar?.title = it.sensorName
-
-            sensorViewModel.getSensorFirebaseValues().observe(viewLifecycleOwner, Observer { list ->
-                val count = list.count()
-                val averageArray = FloatArray(4) { 0f }
-                val maxArray = FloatArray(4) { 0f }
-                val minArray = FloatArray(4) { 0f }
-                val currentArray = floatArrayOf(
-                    list[count - 1].temperature,
-                    list[count - 1].humidity,
-                    list[count - 1].pm10,
-                    list[count - 1].pm25
-                )
-
-                list.forEach { sensorFirebase ->
-                    val timestamp = sensorFirebase.timestamp
-                    val values = floatArrayOf(
-                        sensorFirebase.temperature,
-                        sensorFirebase.humidity,
-                        sensorFirebase.pm10,
-                        sensorFirebase.pm25
-                    )
-                    for ((i, value) in values.withIndex()) {
-                        averageArray[i] += value
-                        if (value > maxArray[i]) {
-                            maxArray[i] = value
-                        } else if (value < minArray[i]) {
-                            minArray[i] = value
-                        }
-                        sensorViewModel.addSensorCardChartValue(
-                            i,
-                            Entry(list.indexOf(sensorFirebase).toFloat(), value)
-                        )
-                    }
-                }
-
-                for (i in 0 until 4) {
-                    sensorViewModel.setSensorCardValues(
-                        i,
-                        currentArray[i],
-                        averageArray[i],
-                        maxArray[i],
-                        minArray[i]
-                    )
-                }
-
-                sensorValuesViewAdapter.notifyDataSetChanged()
-            })
-        })
+        setUpObservers()
 
         return root
     }
@@ -109,7 +60,13 @@ class SensorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        sensorViewModel.setSensorRoom(args.sensorId)
+        // Set selected or favourite sensorId
+        val sensorId = if (args.sensorId != -1) {
+            args.sensorId
+        } else {
+            AppPreferences.favouriteSensorId
+        }
+        sensorViewModel.setSensorRoom(sensorId)
     }
 
     override fun onDestroyView() {
@@ -117,6 +74,68 @@ class SensorFragment : Fragment() {
 
         // Show floating action button
         (activity as MainActivity).showFloatingActionButton()
+    }
+
+    private fun setUpObservers() {
+        // Set sensor room observer
+        sensorViewModel.getSensorRoom().observeOnce(viewLifecycleOwner, Observer {
+            Log.i(TAG, "Load sensor data from Room: ${it.sensorName}")
+            // After sensor loaded from room set up view
+            (requireActivity() as AppCompatActivity).supportActionBar?.title = it.sensorName
+
+            sensorViewModel.getSensorFirebaseValues()
+                .observeOnce(viewLifecycleOwner, Observer { list ->
+                    if (sensorViewModel.getSensorCardsList()[0].chartValues.count() > 0) {
+                        return@Observer
+                    }
+                    Log.i(TAG, "Load sensor data from Firebase")
+                    val count = list.count()
+                    val averageArray = FloatArray(4) { 0f }
+                    val maxArray = FloatArray(4) { 0f }
+                    val minArray = FloatArray(4) { 0f }
+                    val currentArray = floatArrayOf(
+                        list[count - 1].temperature,
+                        list[count - 1].humidity,
+                        list[count - 1].pm10,
+                        list[count - 1].pm25
+                    )
+
+                    list.forEach { sensorFirebase ->
+                        val timestamp = sensorFirebase.timestamp
+                        val values = floatArrayOf(
+                            sensorFirebase.temperature,
+                            sensorFirebase.humidity,
+                            sensorFirebase.pm10,
+                            sensorFirebase.pm25
+                        )
+                        for ((i, value) in values.withIndex()) {
+                            averageArray[i] += value
+                            if (value > maxArray[i]) {
+                                maxArray[i] = value
+                            } else if (value < minArray[i]) {
+                                minArray[i] = value
+                            }
+                            //todo use timestamp
+                            sensorViewModel.addSensorCardChartValue(
+                                i,
+                                Entry(list.indexOf(sensorFirebase).toFloat(), value)
+                            )
+                        }
+                    }
+
+                    for (i in 0 until 4) {
+                        sensorViewModel.setSensorCardValues(
+                            i,
+                            currentArray[i],
+                            averageArray[i],
+                            maxArray[i],
+                            minArray[i]
+                        )
+                    }
+
+                    sensorValuesViewAdapter.notifyDataSetChanged()
+                })
+        })
     }
 
 }
