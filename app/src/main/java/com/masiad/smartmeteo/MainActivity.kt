@@ -116,41 +116,41 @@ class MainActivity : AppCompatActivity() {
             showErrorSnackBar(resources.getString(R.string.check_internet_connection))
             return
         }
-        val database = FirebaseDatabase.getInstance()
-        val myRef = database.reference
-        myRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onCancelled(p0: DatabaseError) {
-                showErrorSnackBar(resources.getString(R.string.firebase_error))
-            }
+        FirebaseDatabase.getInstance()
+            .reference
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onCancelled(p0: DatabaseError) {
+                    showErrorSnackBar(resources.getString(R.string.firebase_error))
+                }
 
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                if (dataSnapshot.children.firstOrNull { i ->
-                        i.key.equals(
-                            serialNumber,
-                            true
-                        )
-                    } != null) {
-                    // Serial exists add sensor to database
-                    sensorListViewModel.insert(
-                        Sensor(
-                            sensorName = sensorName, serialNumber = serialNumber?.toUpperCase(
-                                Locale.ROOT
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    if (dataSnapshot.children.firstOrNull { i ->
+                            i.key.equals(
+                                serialNumber,
+                                true
+                            )
+                        } != null) {
+                        // Serial exists add sensor to database
+                        sensorListViewModel.insert(
+                            Sensor(
+                                sensorName = sensorName, serialNumber = serialNumber?.toUpperCase(
+                                    Locale.ROOT
+                                )
                             )
                         )
-                    )
-                    val navController =
-                        Navigation.findNavController(this@MainActivity, R.id.nav_host_fragment)
-                    if (navController.currentDestination?.id != R.id.nav_sensors_list) {
-                        navController.navigate(R.id.nav_sensors_list)
+                        val navController =
+                            Navigation.findNavController(this@MainActivity, R.id.nav_host_fragment)
+                        if (navController.currentDestination?.id != R.id.nav_sensors_list) {
+                            navController.navigate(R.id.nav_sensors_list)
+                        }
+                        // Move to Sensor Fragment
+                    } else {
+                        // Show error snackbar
+                        showErrorSnackBar(resources.getString(R.string.invalid_serial_number))
                     }
-                    // Move to Sensor Fragment
-                } else {
-                    // Show error snackbar
-                    showErrorSnackBar(resources.getString(R.string.invalid_serial_number))
                 }
-            }
 
-        })
+            })
 
     }
 

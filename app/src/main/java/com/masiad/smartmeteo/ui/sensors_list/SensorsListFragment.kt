@@ -39,9 +39,7 @@ class SensorsListFragment : Fragment() {
 
         val root = inflater.inflate(R.layout.fragment_sensors_list, container, false)
 
-        val favouriteSensorId = AppPreferences.favouriteSensorId
-
-        val sensorAdapter = object : SensorsListAdapter(requireContext(), favouriteSensorId) {
+        val sensorAdapter = object : SensorsListAdapter(mutableListOf()) {
             override fun onItemClick(sensorId: Int) {
                 Navigation.findNavController(root)
                     .navigate(SensorsListFragmentDirections.actionNavSensorsListToSensorFragment().apply {
@@ -49,26 +47,25 @@ class SensorsListFragment : Fragment() {
                     })
             }
 
-            override fun onFavouriteItemClick(sensorId: Int) {
-                // save default in shared preferences
-                AppPreferences.favouriteSensorId = sensorId
-            }
-
-            override fun onLongItemClick(sensorId: Int): Boolean {
-                return onLongClick(sensorId)
+            override fun onLongItemClick(sensorId: Int) {
+                onLongClick(sensorId)
             }
 
         }
         adapter = sensorAdapter
         // Sensor list observe
-        sensorListViewModel.allSensors.observe(viewLifecycleOwner, Observer { sensors ->
-            sensors?.let { adapter.setSensors(it) }
-        })
+        sensorListViewModel.getAllSensorsLiveData()
+            .observe(viewLifecycleOwner, Observer { sensors ->
+                sensors?.let {
+                    Log.i(TAG, "Sensors list loaded: $it")
+                    adapter.updateSensorsList(it)
+                }
+            })
 
         return root
     }
 
-    private fun onLongClick(sensorId: Int): Boolean {
+    private fun onLongClick(sensorId: Int) {
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.confirm_delete_sensor)
             .setPositiveButton(
@@ -76,21 +73,20 @@ class SensorsListFragment : Fragment() {
             ) { _, _ ->
                 // Remove sensor form database
                 sensorListViewModel.deleteById(sensorId)
-                adapter.notifyDataSetChanged()
                 // Remove from favourite
                 if (AppPreferences.favouriteSensorId == sensorId) {
                     AppPreferences.blockingBulk {
                         favouriteSensorId = -1
                     }
                 }
+                // Refresh adapter
+                adapter.notifyDataSetChanged()
                 Log.i(TAG, "Delete favourite: " + AppPreferences.favouriteSensorId)
             }
             .setNegativeButton(
                 android.R.string.cancel, null
             )
             .show()
-
-        return true
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

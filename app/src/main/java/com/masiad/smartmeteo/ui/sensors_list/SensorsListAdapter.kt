@@ -1,6 +1,7 @@
 package com.masiad.smartmeteo.ui.sensors_list
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,78 +10,79 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.masiad.smartmeteo.R
 import com.masiad.smartmeteo.data.Sensor
+import com.masiad.smartmeteo.utils.AppPreferences
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * Sensor List [RecyclerView.Adapter]
  */
-abstract class SensorsListAdapter internal constructor(
-    val context: Context, val favouriteSensorId: Int
-) : RecyclerView.Adapter<SensorsListAdapter.SensorsViewHolder>() {
+abstract class SensorsListAdapter(val sensorsList: MutableList<Sensor>) :
+    RecyclerView.Adapter<SensorsListAdapter.SensorsViewHolder>() {
+    companion object {
+        val TAG: String = SensorsListFragment::class.java.simpleName
+    }
+
     abstract fun onItemClick(sensorId: Int)
-    abstract fun onFavouriteItemClick(sensorId: Int)
-    abstract fun onLongItemClick(sensorId: Int): Boolean
+    abstract fun onLongItemClick(sensorId: Int)
 
-    private val inflater: LayoutInflater = LayoutInflater.from(context)
-    private var sensors = emptyList<Sensor>() // Cached copy of words
-    private val viewHoldersList = mutableListOf<SensorsViewHolder>()
+    private lateinit var context: Context
 
-    inner class SensorsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class SensorsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val sensorItemTextView: TextView = itemView.findViewById(R.id.textView)
         val sensorItemImageButton: ImageButton = itemView.findViewById(R.id.favouriteImageButton)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SensorsViewHolder {
-        val itemView = inflater.inflate(R.layout.sensor_recyclerview_item, parent, false)
+        context = parent.context
+        val view =
+            LayoutInflater.from(context).inflate(R.layout.sensor_recyclerview_item, parent, false)
 
-        return SensorsViewHolder(itemView)
+        return SensorsViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: SensorsViewHolder, position: Int) {
-        viewHoldersList.add(holder)
-        val current = sensors[position]
-        holder.sensorItemTextView.text = current.sensorName
+        val currentItem = sensorsList[position]
+        holder.sensorItemTextView.text = currentItem.sensorName
         // Set favourite sensor image
-        if (current.sensorId == favouriteSensorId) {
-            holder.sensorItemImageButton.setImageDrawable(
-                context.resources.getDrawable(
-                    R.drawable.ic_favorite_black,
-                    null
-                )
-            )
-            onFavouriteItemClick(current.sensorId)
+        val isFavourite = currentItem.sensorId == AppPreferences.favouriteSensorId
+        if (isFavourite) {
+            holder.sensorItemImageButton.setImageResource(R.drawable.ic_favorite_black)
+        } else {
+            holder.sensorItemImageButton.setImageResource(R.drawable.ic_favorite_border_black)
         }
 
         holder.itemView.setOnClickListener {
-            onItemClick(current.sensorId)
+            onItemClick(currentItem.sensorId)
         }
 
         holder.sensorItemImageButton.setOnClickListener {
-            viewHoldersList.forEach { h ->
-                h.sensorItemImageButton.setImageDrawable(
-                    context.resources.getDrawable(
-                        R.drawable.ic_favorite_border_black,
-                        null
-                    )
-                )
+            CoroutineScope(Dispatchers.Main).launch {
+                val favouriteDrawable = if (isFavourite) {
+                    AppPreferences.favouriteSensorId = -1
+                    R.drawable.ic_favorite_border_black
+                } else {
+                    Log.i(TAG, "Favourite sensor set: ${currentItem.sensorName}")
+                    AppPreferences.favouriteSensorId = currentItem.sensorId
+                    R.drawable.ic_favorite_black
+                }
+                (it as ImageButton).setImageResource(favouriteDrawable)
+                notifyDataSetChanged()
             }
-            (it as ImageButton).setImageDrawable(
-                context.resources.getDrawable(
-                    R.drawable.ic_favorite_black,
-                    null
-                )
-            )
-            onFavouriteItemClick(current.sensorId)
         }
 
         holder.itemView.setOnLongClickListener {
-            return@setOnLongClickListener onLongItemClick(current.sensorId)
+            onLongItemClick(currentItem.sensorId)
+            return@setOnLongClickListener true
         }
     }
 
-    internal fun setSensors(sensors: List<Sensor>) {
-        this.sensors = sensors
+    override fun getItemCount() = sensorsList.size
+
+    fun updateSensorsList(list: List<Sensor>) {
+        sensorsList.clear()
+        sensorsList.addAll(list)
         notifyDataSetChanged()
     }
-
-    override fun getItemCount() = sensors.size
 }

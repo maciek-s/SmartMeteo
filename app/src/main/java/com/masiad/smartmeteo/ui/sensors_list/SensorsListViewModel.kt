@@ -1,11 +1,12 @@
 package com.masiad.smartmeteo.ui.sensors_list
 
 import android.app.Application
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.viewModelScope
+import com.masiad.smartmeteo.data.AppRoomDatabase
 import com.masiad.smartmeteo.data.Sensor
 import com.masiad.smartmeteo.data.SensorRepository
-import com.masiad.smartmeteo.data.AppRoomDatabase
-import com.masiad.smartmeteo.ui.sensor.SensorViewModel
 import kotlinx.coroutines.launch
 
 /**
@@ -18,12 +19,10 @@ class SensorsListViewModel(application: Application) : AndroidViewModel(applicat
 
     // The ViewModel maintains a reference to the repository to get data.
     private val repository: SensorRepository
-    // LiveData gives us updated words when they change.
-    val allSensors: LiveData<List<Sensor>>
+    private val allSensors: LiveData<List<Sensor>>
 
     init {
-        // Gets reference to SensorDao from appRoomDatabase to construct
-        // the correct SensorRepository.
+        // Gets reference to SensorDao from appRoomDatabase to construct the correct SensorRepository.
         val sensorDao = AppRoomDatabase.getDatabase(application, viewModelScope).sensorDao()
         repository = SensorRepository(sensorDao)
         allSensors = repository.allSensors
@@ -37,4 +36,7 @@ class SensorsListViewModel(application: Application) : AndroidViewModel(applicat
         repository.deleteById(sensorId)
     }
 
+    fun getAllSensorsLiveData(): LiveData<List<Sensor>> {
+        return allSensors
+    }
 }
