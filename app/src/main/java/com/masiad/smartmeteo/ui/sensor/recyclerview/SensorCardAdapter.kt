@@ -13,6 +13,7 @@ import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.masiad.smartmeteo.R
+import com.masiad.smartmeteo.chart.XAxisFormatter
 import com.masiad.smartmeteo.chart.YAxisFormatter
 import com.masiad.smartmeteo.utils.dp
 import com.masiad.smartmeteo.utils.slideAnimate
@@ -20,10 +21,11 @@ import com.masiad.smartmeteo.utils.slideAnimate
 /**
  * Sensor Card [RecyclerView.Adapter]
  */
-class SensorCardAdapter(val sensorCardList: List<SensorCard>) :
+class SensorCardAdapter(val sensorCardList: List<SensorCard>, val sensorTimestampList: List<Long>) :
     RecyclerView.Adapter<SensorCardAdapter.ViewHolder>() {
 
     private lateinit var context: Context
+    private var isLiveValueObserverPhase = false
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -42,9 +44,8 @@ class SensorCardAdapter(val sensorCardList: List<SensorCard>) :
             dataSet.setCircleColors(intArrayOf(R.color.colorAccent), context)
             dataSet.setColors(intArrayOf(R.color.colorAccent), context)
 
-            //todo format timestamp
-//        xAxis.valueFormatter =
-//            XAxisFormatter(sensorViewModel.getTimestampLiveData().value!!)
+            xAxis.valueFormatter =
+                XAxisFormatter(sensorTimestampList)
             axisLeft?.valueFormatter =
                 YAxisFormatter()
             axisRight?.valueFormatter =
@@ -63,7 +64,11 @@ class SensorCardAdapter(val sensorCardList: List<SensorCard>) :
             context.resources.getString(sensorCardItem.sensorType.nameId)
         val unit = context.resources.getString(sensorCardItem.sensorType.unitId)
         holder.sensorValueTextView.text = String.format("%.1f%s", sensorCardItem.currentValue, unit)
-        holder.chartAvgTextView.text = String.format("%.1f%s", sensorCardItem.avgSum / sensorCardItem.chartValues.count(), unit)
+        holder.chartAvgTextView.text = String.format(
+            "%.1f%s",
+            sensorCardItem.avgSum / sensorCardItem.chartValues.count(),
+            unit
+        )
         holder.chartMaxTextView.text = String.format("%.1f%s", sensorCardItem.max, unit)
         holder.chartMinTextView.text = String.format("%.1f%s", sensorCardItem.min, unit)
 
@@ -79,14 +84,25 @@ class SensorCardAdapter(val sensorCardList: List<SensorCard>) :
         }
 
         holder.sensorLineChart.data.dataSets[0].label = unit
-        sensorCardItem.chartValues.forEach {
-            holder.sensorLineChart.data.addEntry(it, 0)
+        if (isLiveValueObserverPhase) {
+            val liveEntry = sensorCardItem.chartValues.last()
+            holder.sensorLineChart.data.addEntry(liveEntry, 0)
+        } else {
+            sensorCardItem.chartValues.forEach {
+                holder.sensorLineChart.data.addEntry(it, 0)
+            }
         }
+        holder.sensorLineChart.notifyDataSetChanged()
+        holder.sensorLineChart.invalidate()
 
     }
 
     override fun getItemCount(): Int {
         return sensorCardList.count()
+    }
+
+    fun setIsLiveValueObserverPhase(isObserverPhase: Boolean) {
+        isLiveValueObserverPhase = isObserverPhase
     }
 
 

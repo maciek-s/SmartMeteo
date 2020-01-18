@@ -46,7 +46,10 @@ class SensorFragment : Fragment() {
         (activity as MainActivity).hideFloatingActionButton()
 
         // Bind recycler view
-        sensorValuesViewAdapter = SensorCardAdapter(sensorViewModel.getSensorCardsList())
+        sensorValuesViewAdapter = SensorCardAdapter(
+            sensorViewModel.getSensorCardsList(),
+            sensorViewModel.getSensorFirebaseTimestampList()
+        )
         sensorValuesRecyclerView =
             root.findViewById<RecyclerView>(R.id.sensorValuesRecyclerView).apply {
                 adapter = sensorValuesViewAdapter
@@ -84,11 +87,13 @@ class SensorFragment : Fragment() {
             (requireActivity() as AppCompatActivity).supportActionBar?.title = it.sensorName
 
             sensorViewModel.getSensorFirebaseValues()
-                .observeOnce(viewLifecycleOwner, Observer { list ->
+                .observe(viewLifecycleOwner, Observer { list ->
                     if (sensorViewModel.getSensorCardsList()[0].chartValues.count() > 0) {
+                        // to observe current value
                         return@Observer
                     }
                     Log.i(TAG, "Load sensor data from Firebase")
+                    // Parse multiple values
                     val count = list.count()
                     val averageArray = FloatArray(4) { 0f }
                     val currentArray = floatArrayOf(
@@ -101,7 +106,8 @@ class SensorFragment : Fragment() {
                     val maxArray = FloatArray(4) { i -> currentArray[i] }
 
                     list.forEach { sensorFirebase ->
-                        val timestamp = sensorFirebase.timestamp
+                        sensorViewModel.addToSensorFirebaseList(sensorFirebase.timestamp)
+
                         val values = floatArrayOf(
                             sensorFirebase.temperature,
                             sensorFirebase.humidity,
@@ -115,7 +121,6 @@ class SensorFragment : Fragment() {
                             } else if (value < minArray[i]) {
                                 minArray[i] = value
                             }
-                            //todo use timestamp
                             sensorViewModel.addSensorCardChartValue(
                                 i,
                                 Entry(list.indexOf(sensorFirebase).toFloat(), value)
@@ -134,8 +139,34 @@ class SensorFragment : Fragment() {
                     }
 
                     sensorValuesViewAdapter.notifyDataSetChanged()
+
+                    setSensorLiveValueObserver()
                 })
         })
+    }
+
+    private fun setSensorLiveValueObserver() {
+        sensorViewModel.getSensorLiveFirebaseValue().observe(viewLifecycleOwner, Observer { live ->
+            (sensorValuesViewAdapter as SensorCardAdapter).setIsLiveValueObserverPhase(true)
+
+            // Parse single value
+            sensorViewModel.addToSensorFirebaseList(live.timestamp)
+
+            val liveValues = floatArrayOf(
+                live.temperature,
+                live.humidity,
+                live.pm10,
+                live.pm25
+            )
+
+            for (i in 0 until 4) {
+                sensorViewModel.updateSensorCardValues(i, liveValues[i])
+            }
+
+            sensorValuesViewAdapter.notifyDataSetChanged()
+        })
+
+        sensorViewModel.setUpListenerForLiveFirebaseValues()
     }
 
 }

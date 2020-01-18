@@ -8,11 +8,12 @@ import java.util.*
 /**
  * X Axis Formatter for [Chart]
  */
-class XAxisFormatter(private val timestampList: MutableList<Long>) : ValueFormatter() {
+class XAxisFormatter(private val timestampList: List<Long>) : ValueFormatter() {
     override fun getAxisLabel(value: Float, axis: AxisBase?): String {
         val calendar = Calendar.getInstance(Locale.getDefault())
         val timestamp = timestampList[value.toInt()]
         calendar.timeInMillis = timestamp * 1000L
+
         return android.text.format.DateFormat.format("HH:mm:ss", calendar).toString()
     }
 }

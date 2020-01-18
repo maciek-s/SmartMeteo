@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.util.Log
 import androidx.navigation.Navigation
 import com.chibatching.kotpref.Kotpref
-import com.google.firebase.database.FirebaseDatabase
 import com.masiad.smartmeteo.utils.AppPreferences
 
 /**
@@ -23,7 +22,7 @@ class SmartMeteoApplication : Application() {
         super.onCreate()
 
         // Enable Firebase offline
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true)
+//        FirebaseDatabase.getInstance().setPersistenceEnabled(true)
 
         // Init Kotpref
         Kotpref.init(this)

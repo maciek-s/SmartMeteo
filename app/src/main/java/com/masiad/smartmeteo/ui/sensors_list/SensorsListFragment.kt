@@ -94,7 +94,10 @@ class SensorsListFragment : Fragment() {
 
         recyclerView = view.findViewById(R.id.recyclerview)
         recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.layoutManager = LinearLayoutManager(requireContext()).apply {
+            reverseLayout = true
+            stackFromEnd = true
+        }
         recyclerView.addItemDecoration(
             DividerItemDecoration(
                 recyclerView.context,
