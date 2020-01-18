@@ -91,14 +91,14 @@ class SensorFragment : Fragment() {
                     Log.i(TAG, "Load sensor data from Firebase")
                     val count = list.count()
                     val averageArray = FloatArray(4) { 0f }
-                    val maxArray = FloatArray(4) { 0f }
-                    val minArray = FloatArray(4) { 0f }
                     val currentArray = floatArrayOf(
                         list[count - 1].temperature,
                         list[count - 1].humidity,
                         list[count - 1].pm10,
                         list[count - 1].pm25
                     )
+                    val minArray = FloatArray(4) { i -> currentArray[i] }
+                    val maxArray = FloatArray(4) { i -> currentArray[i] }
 
                     list.forEach { sensorFirebase ->
                         val timestamp = sensorFirebase.timestamp
