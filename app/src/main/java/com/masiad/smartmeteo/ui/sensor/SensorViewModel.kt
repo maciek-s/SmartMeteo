@@ -33,6 +33,7 @@ class SensorViewModel(application: Application) : AndroidViewModel(application) 
     private val sensorFirebaseValues: MutableLiveData<List<SensorFirebase>> = MutableLiveData()
     // Sensor current value from firebase
     private val sensorLiveFirebaseValue: MutableLiveData<SensorFirebase> = MutableLiveData()
+    private lateinit var sensorLiveFirebaseValueChildEventListener: ChildEventListener
 
     // Each card view values
     private val sensorCardsList: List<SensorCard> = listOf(
@@ -86,8 +87,14 @@ class SensorViewModel(application: Application) : AndroidViewModel(application) 
         return sensorLiveFirebaseValue
     }
 
-    fun setUpListenerForLiveFirebaseValues() {
+    fun removeSensorLiveFirebaseValueChildEventListener() {
         FirebaseDatabase.getInstance()
+            .getReference(sensorRoom.value!!.serialNumber!!)
+            .removeEventListener(sensorLiveFirebaseValueChildEventListener)
+    }
+
+    fun setUpListenerForLiveFirebaseValues() {
+        sensorLiveFirebaseValueChildEventListener = FirebaseDatabase.getInstance()
             .getReference(sensorRoom.value!!.serialNumber!!)
             .orderByChild(FIREBASE_TIMESTAMP_KEY)
             .startAt(sensorFirebaseTimestamp.last().toDouble() + 1.0)

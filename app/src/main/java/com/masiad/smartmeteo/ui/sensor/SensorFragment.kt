@@ -77,6 +77,8 @@ class SensorFragment : Fragment() {
 
         // Show floating action button
         (activity as MainActivity).showFloatingActionButton()
+        // Remove live firebase listener
+        sensorViewModel.removeSensorLiveFirebaseValueChildEventListener()
     }
 
     private fun setUpObservers() {
@@ -88,10 +90,6 @@ class SensorFragment : Fragment() {
 
             sensorViewModel.getSensorFirebaseValues()
                 .observe(viewLifecycleOwner, Observer { list ->
-                    if (sensorViewModel.getSensorCardsList()[0].chartValues.count() > 0) {
-                        // to observe current value
-                        return@Observer
-                    }
                     Log.i(TAG, "Load sensor data from Firebase")
                     // Parse multiple values
                     val count = list.count()
