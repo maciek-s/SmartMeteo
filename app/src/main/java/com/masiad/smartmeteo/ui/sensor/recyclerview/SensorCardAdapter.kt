@@ -1,6 +1,7 @@
 package com.masiad.smartmeteo.ui.sensor.recyclerview
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +24,9 @@ import com.masiad.smartmeteo.utils.slideAnimate
  */
 class SensorCardAdapter(val sensorCardList: List<SensorCard>, val sensorTimestampList: List<Long>) :
     RecyclerView.Adapter<SensorCardAdapter.ViewHolder>() {
+    companion object {
+        val TAG: String = SensorCardAdapter::class.java.simpleName
+    }
 
     private lateinit var context: Context
     private var isLiveValueObserverPhase = false
@@ -52,6 +56,12 @@ class SensorCardAdapter(val sensorCardList: List<SensorCard>, val sensorTimestam
                 YAxisFormatter()
             data = LineData(dataSet)
             data.setValueFormatter(YAxisFormatter())
+
+            // todo setup chart listener
+//            LineChartGestureListener(this)
+
+//            xAxis.setDrawLabels(false)
+//            data.setDrawValues(false)
         }
 
         return ViewHolder(view)
@@ -84,15 +94,41 @@ class SensorCardAdapter(val sensorCardList: List<SensorCard>, val sensorTimestam
         }
 
         holder.sensorLineChart.data.dataSets[0].label = unit
+
         if (isLiveValueObserverPhase) {
             val liveEntry = sensorCardItem.chartValues.last()
             holder.sensorLineChart.data.addEntry(liveEntry, 0)
+
+            holder.sensorLineChart.notifyDataSetChanged()
         } else {
             sensorCardItem.chartValues.forEach {
                 holder.sensorLineChart.data.addEntry(it, 0)
             }
+
+            // only once
+            if (position != 0) {
+                // Only temperature has negative values
+                holder.sensorLineChart.axisLeft.axisMinimum = 0f
+                holder.sensorLineChart.axisRight.axisMinimum = 0f
+                if (position == 1) {
+                    // Only humidity has max value equals 100
+                    holder.sensorLineChart.axisLeft.axisMaximum = 100f
+                    holder.sensorLineChart.axisRight.axisMaximum = 100f
+                }
+            }
+
+            holder.sensorLineChart.notifyDataSetChanged()
+
+            holder.sensorLineChart.setVisibleXRangeMinimum(10f)
+            holder.sensorLineChart.setVisibleXRangeMaximum(200f)
+            val size = sensorTimestampList.count()
+
+            if (size > 10) {
+                holder.sensorLineChart.moveViewToX(sensorCardList[position].chartValues[size - 10].x)
+            }
+
         }
-        holder.sensorLineChart.notifyDataSetChanged()
+
         holder.sensorLineChart.invalidate()
 
     }
