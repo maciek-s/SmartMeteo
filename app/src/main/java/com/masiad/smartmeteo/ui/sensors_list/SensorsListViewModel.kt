@@ -8,6 +8,7 @@ import com.masiad.smartmeteo.data.AppRoomDatabase
 import com.masiad.smartmeteo.data.Sensor
 import com.masiad.smartmeteo.data.SensorRepository
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 /**
  * ViewModel for [SensorsListFragment]
@@ -38,5 +39,13 @@ class SensorsListViewModel(application: Application) : AndroidViewModel(applicat
 
     fun getAllSensorsLiveData(): LiveData<List<Sensor>> {
         return allSensors
+    }
+
+    fun isNameAlreadyInserted(name: String): Boolean {
+        var sensorNameExists: Sensor? = null
+        runBlocking {
+            sensorNameExists = repository.loadByName(name)
+        }
+        return sensorNameExists != null
     }
 }

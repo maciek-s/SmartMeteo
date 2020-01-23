@@ -14,6 +14,9 @@ interface SensorDao {
     @Query("SELECT * FROM sensors_table WHERE sensorId = (:sensorID)")
     suspend fun loadById(sensorID: Int): Sensor
 
+    @Query("SELECT * FROM sensors_table WHERE sensor_name = (:sensorName)")
+    suspend fun loadByName(sensorName: String): Sensor?
+
     @Query("DELETE FROM sensors_table WHERE sensorId = (:sensorID)")
     suspend fun deleteById(sensorID: Int)
 

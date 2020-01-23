@@ -116,6 +116,11 @@ class MainActivity : AppCompatActivity() {
             showErrorSnackBar(resources.getString(R.string.check_internet_connection))
             return
         }
+        val isNameAlreadyInserted = sensorListViewModel.isNameAlreadyInserted(sensorName!!)
+        if (isNameAlreadyInserted) {
+            showErrorSnackBar(resources.getString(R.string.sensor_name_already_exists))
+            return
+        }
         FirebaseDatabase.getInstance()
             .reference
             .addListenerForSingleValueEvent(object : ValueEventListener {
