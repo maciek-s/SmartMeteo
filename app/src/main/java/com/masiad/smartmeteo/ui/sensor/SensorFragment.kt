@@ -44,6 +44,8 @@ class SensorFragment : Fragment() {
 
         // Hide floating action button
         (activity as MainActivity).hideFloatingActionButton()
+        // Show progress bar before values are loaded
+        (activity as MainActivity).showProgressBar()
 
         // Bind recycler view
         sensorValuesViewAdapter = SensorCardAdapter(
@@ -77,6 +79,7 @@ class SensorFragment : Fragment() {
 
         // Show floating action button
         (activity as MainActivity).showFloatingActionButton()
+        (activity as MainActivity).hideProgressBar()
         // Remove live firebase listener
         sensorViewModel.removeSensorLiveFirebaseValueChildEventListener()
     }
@@ -139,6 +142,8 @@ class SensorFragment : Fragment() {
                     sensorValuesViewAdapter.notifyDataSetChanged()
 
                     setSensorLiveValueObserver()
+
+                    (activity as MainActivity).hideProgressBar()
                 })
         })
     }

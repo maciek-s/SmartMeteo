@@ -2,6 +2,9 @@ package com.masiad.smartmeteo
 
 import android.os.Bundle
 import android.view.Menu
+import android.view.View
+import android.view.WindowManager
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -39,6 +42,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var fab: FloatingActionButton
 
+    private lateinit var progressBar: ProgressBar
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -52,6 +57,8 @@ class MainActivity : AppCompatActivity() {
         fab.setOnClickListener { _ ->
             showAddSensorModal()
         }
+
+        progressBar = findViewById(R.id.progressBar)
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
@@ -83,6 +90,7 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton(
                 R.string.add
             ) { _, _ ->
+                showProgressBar()
                 val sensorName = layout.findViewById<TextView>(R.id.fieldSensorName).text
                 val serialNumber = layout.findViewById<TextView>(R.id.fieldSerialNumber).text
                 if (isSensorFieldsCorrectly(sensorName, serialNumber)) {
@@ -101,6 +109,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showErrorSnackBar(message: String) {
+        hideProgressBar()
         Snackbar.make(
             this.findViewById(R.id.fab),
             message,
@@ -154,6 +163,7 @@ class MainActivity : AppCompatActivity() {
                         if (navController.currentDestination?.id != R.id.nav_sensors_list) {
                             navController.navigate(R.id.nav_sensors_list)
                         }
+                        hideProgressBar()
                         // Move to Sensor Fragment
                     } else {
                         // Show error snackbar
@@ -176,11 +186,25 @@ class MainActivity : AppCompatActivity() {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
-    public fun showFloatingActionButton() {
+    fun showFloatingActionButton() {
         fab.show()
     }
 
-    public fun hideFloatingActionButton() {
+    fun hideFloatingActionButton() {
         fab.hide()
     }
+
+    fun showProgressBar() {
+        progressBar.visibility = View.VISIBLE
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+        )
+    }
+
+    fun hideProgressBar() {
+        progressBar.visibility = View.INVISIBLE
+        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
+
 }
