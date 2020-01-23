@@ -12,8 +12,4 @@ class InfoViewModel : ViewModel() {
         val TAG: String = InfoViewModel::class.java.simpleName
     }
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is info Fragment"
-    }
-    val text: LiveData<String> = _text
 }

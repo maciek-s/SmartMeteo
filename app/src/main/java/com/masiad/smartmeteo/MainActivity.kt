@@ -23,7 +23,9 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.masiad.smartmeteo.data.Sensor
 import com.masiad.smartmeteo.ui.sensors_list.SensorsListViewModel
+import com.masiad.smartmeteo.utils.AppPreferences
 import com.masiad.smartmeteo.utils.InternetConnection
+import com.masiad.smartmeteo.utils.UP_SENSOR_SERIAL_NUMBER
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -72,6 +74,10 @@ class MainActivity : AppCompatActivity() {
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
         val layout = layoutInflater.inflate(R.layout.dialog_add_sensor, null)
+        if (AppPreferences.isFirstAppStart) {
+            layout.findViewById<TextView>(R.id.fieldSerialNumber).text = UP_SENSOR_SERIAL_NUMBER
+            AppPreferences.isFirstAppStart = false
+        }
         builder.setView(layout)
             // Add action buttons
             .setPositiveButton(

@@ -40,5 +40,6 @@
     <string name="pm25_unit">µg/m³</string>
     <string name="app_logo">App logo</string>
     <string name="info_text">1. Connect the sensor to the power supply and internet.\n\n2. Click the button in the bottom right corner and add the sensor specifying the serial number.\n\n3. That\'s all. Now you have access to the values received by the sensor from anywhere.</string>
+    <string name="info_sensor_up"><![CDATA[Our first sensor is located at the Pedagogical University of Cracow. Insert <b>%s</b> as serial number to check current values]]></string>
     <string name="sensor_name_already_exists">Sensor name already exists!</string>
 </resources>

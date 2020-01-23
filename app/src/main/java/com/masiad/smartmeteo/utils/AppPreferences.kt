@@ -8,4 +8,5 @@ import com.chibatching.kotpref.KotprefModel
  */
 object AppPreferences : KotprefModel() {
     var favouriteSensorId by intPref(default = -1)
+    var isFirstAppStart by booleanPref(default = true)
 }

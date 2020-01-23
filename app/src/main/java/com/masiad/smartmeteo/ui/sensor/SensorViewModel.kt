@@ -153,10 +153,10 @@ class SensorViewModel(application: Application) : AndroidViewModel(application) 
             val values = snapshot.value as HashMap<*, *>
 
             val timestamp = values[FIREBASE_TIMESTAMP_KEY] as Long
-            val temp = values[FIREBASE_TEMPERATURE_KEY] as Double
-            val humidity = values[FIREBASE_HUMIDITY_KEY] as Double
-            val pm10 = values[FIREBASE_PM10_KEY] as Double
-            val pm25 = values[FIREBASE_PM25_KEY] as Double
+            val temp = values[FIREBASE_TEMPERATURE_KEY] as Number
+            val humidity = values[FIREBASE_HUMIDITY_KEY] as Number
+            val pm10 = values[FIREBASE_PM10_KEY] as Number
+            val pm25 = values[FIREBASE_PM25_KEY] as Number
 
             sensorFirebaseList.add(
                 SensorFirebase(
